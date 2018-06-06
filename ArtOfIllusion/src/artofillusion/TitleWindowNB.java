@@ -13,6 +13,8 @@ package artofillusion;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -50,19 +52,23 @@ public class TitleWindowNB extends JFrame implements PropertyChangeListener {
         
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setUndecorated(true);
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                TitleWindowNB.this.setVisible(false);
+                TitleWindowNB.this.dispose();
+            }
+            
+        });
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowActivated(WindowEvent e) {
-                super.windowActivated(e);
                 logger.log(Level.INFO, "Window activated");
-                
             }
 
             @Override
             public void windowDeactivated(WindowEvent e) {
-                super.windowDeactivated(e);
                 logger.log(Level.INFO, "Window deactivated");
-                
             }
             
             
@@ -70,11 +76,16 @@ public class TitleWindowNB extends JFrame implements PropertyChangeListener {
         int num = new Random(System.currentTimeMillis()).nextInt(8);
         ImageIcon image = new ImageIcon(getClass().getResource("/artofillusion/titleImages/titleImage" + num + ".jpg"));
         String text = "<html><div align=\"center\">"
-                + "Art of Illusion v" + ArtOfIllusion.getVersion()
+                + "Art of Illusion version " + ArtOfIllusion.getVersion()
                 + "<br>Copyright 1999-2015 by Peter Eastman and others"
                 + "<br>(See the README file for details.)"
                 + "<br>This program may be freely distributed under"
                 + "<br>the terms of the accompanying license.</div></html>";
+        
+        Runtime runtime = Runtime.getRuntime();
+        int cpuCount = runtime.availableProcessors();
+        String javaVersion = System.getProperty("java.version");
+        String javaVendor = System.getProperty("java.vendor");
         
         Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         
