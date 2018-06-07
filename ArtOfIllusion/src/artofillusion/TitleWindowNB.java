@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,22 +34,24 @@ import javax.swing.border.EmptyBorder;
  *
  * @author maksim.khramov
  */
-public class TitleWindowNB extends JFrame implements PropertyChangeListener {
+public class TitleWindowNB extends JDialog implements PropertyChangeListener {
+    
     private static final Logger logger = Logger.getLogger(TitleWindowNB.class.getName());
     
     private static final long serialVersionUID = 1L;
     
-    
-    
+    public TitleWindowNB(JFrame owner) {
+        super(owner, "Art OF Illusion");
+    }
     
     public TitleWindowNB() {
-        super("Art Of Illusion");
+        this((JFrame)null);
     }
 
     @Override
-    protected void frameInit() {
+    protected void dialogInit() {
         
-        super.frameInit();
+        super.dialogInit();
         
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setUndecorated(true);
@@ -75,12 +78,17 @@ public class TitleWindowNB extends JFrame implements PropertyChangeListener {
         });
         int num = new Random(System.currentTimeMillis()).nextInt(8);
         ImageIcon image = new ImageIcon(getClass().getResource("/artofillusion/titleImages/titleImage" + num + ".jpg"));
-        String text = "<html><div align=\"center\">"
+        String text = "<html>"
+                + "<div align=\"center\">"
                 + "Art of Illusion version " + ArtOfIllusion.getVersion()
                 + "<br>Copyright 1999-2015 by Peter Eastman and others"
                 + "<br>(See the README file for details.)"
                 + "<br>This program may be freely distributed under"
-                + "<br>the terms of the accompanying license.</div></html>";
+                + "<br>the terms of the accompanying license."
+                + "</div>"
+                + "</html>";
+        
+        String extraData = "";
         
         Runtime runtime = Runtime.getRuntime();
         int cpuCount = runtime.availableProcessors();

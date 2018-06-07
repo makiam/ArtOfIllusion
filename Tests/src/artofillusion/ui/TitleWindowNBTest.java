@@ -49,4 +49,4 @@ public class TitleWindowNBTest {
         Thread.sleep(1000);
 
     }
-}
+    }
