@@ -10,6 +10,7 @@
 
 package artofillusion;
 
+import artofillusion.ui.Translate;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
@@ -78,6 +79,18 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         });
         int num = new Random(System.currentTimeMillis()).nextInt(8);
         ImageIcon image = new ImageIcon(getClass().getResource("/artofillusion/titleImages/titleImage" + num + ".jpg"));
+
+        Runtime runtime = Runtime.getRuntime();
+        int cpuCount = runtime.availableProcessors();
+        String javaVersion = System.getProperty("java.version");
+        String javaVendor = System.getProperty("java.vendor");
+        
+        String extraData = Translate.text("about.system.info", javaVersion, javaVendor);
+        
+
+        
+        Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
+        
         String text = "<html>"
                 + "<div align=\"center\">"
                 + "Art of Illusion version " + ArtOfIllusion.getVersion()
@@ -86,16 +99,8 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
                 + "<br>This program may be freely distributed under"
                 + "<br>the terms of the accompanying license."
                 + "</div>"
+                + extraData
                 + "</html>";
-        
-        String extraData = "";
-        
-        Runtime runtime = Runtime.getRuntime();
-        int cpuCount = runtime.availableProcessors();
-        String javaVersion = System.getProperty("java.version");
-        String javaVendor = System.getProperty("java.vendor");
-        
-        Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         
         JLabel label = new JLabel(text,image,JLabel.CENTER);
         

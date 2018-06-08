@@ -10,6 +10,8 @@
 
 package artofillusion.ui;
 
+import artofillusion.ArtOfIllusion;
+import artofillusion.PluginRegistry;
 import artofillusion.TitleWindowNB;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +37,7 @@ public class TitleWindowNBTest {
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
             logger.log(Level.INFO, "Exception at test setup", ex);
         }
+        PluginRegistry.registerResource("TranslateBundle", "artofillusion", ArtOfIllusion.class.getClassLoader(), "artofillusion", null);
     }
 
     @Test

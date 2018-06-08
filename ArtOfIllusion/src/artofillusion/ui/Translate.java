@@ -353,7 +353,7 @@ public class Translate
       then passed to MessageFormat.format() so that any variable fields
       can be replaced with the correct values. */
 
-  public static String text(String name, Object args[])
+  public static String text(String name, Object... args)
   {
     String pattern = name;
     try
