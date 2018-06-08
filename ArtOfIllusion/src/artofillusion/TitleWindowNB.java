@@ -42,7 +42,7 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
     private static final long serialVersionUID = 1L;
     
     public TitleWindowNB(JFrame owner) {
-        super(owner, "Art OF Illusion");
+        super(owner, "Art OF Illusion", ModalityType.DOCUMENT_MODAL);
     }
     
     public TitleWindowNB() {
@@ -85,21 +85,24 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         String javaVersion = System.getProperty("java.version");
         String javaVendor = System.getProperty("java.vendor");
         
-        String extraData = Translate.text("about.system.info", javaVersion, javaVendor);
-        
-
-        
+        StringBuilder extra = new StringBuilder();
+        extra.append("<hr/>").append(Translate.text("about.java.version", javaVersion, javaVendor)).append("<br/>");
+        extra.append(Translate.text("about.system.version", System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"))).append("<br/>");
+        long used = (runtime.totalMemory() - runtime.freeMemory()) / 0x100000L;
+        long allocated = runtime.totalMemory() / 0x100000L;
+        long max =  runtime.maxMemory() / 0x100000L;
+        extra.append(Translate.text("about.system.memory", used, allocated, max)).append("<br/>");
         Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         
         String text = "<html>"
-                + "<div align=\"center\">"
+                + "<div align='center'>"
                 + "Art of Illusion version " + ArtOfIllusion.getVersion()
-                + "<br>Copyright 1999-2015 by Peter Eastman and others"
+                + "<br>Copyright 1999-2018 by Peter Eastman and others"
                 + "<br>(See the README file for details.)"
                 + "<br>This program may be freely distributed under"
                 + "<br>the terms of the accompanying license."
                 + "</div>"
-                + extraData
+                + extra.toString()
                 + "</html>";
         
         JLabel label = new JLabel(text,image,JLabel.CENTER);
@@ -125,8 +128,9 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("activeWindow", this);
         this.pack();
-        this.setVisible(true);
         this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        
     }
 
     @Override
