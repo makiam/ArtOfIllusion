@@ -38,7 +38,10 @@ import javax.swing.border.EmptyBorder;
 public class TitleWindowNB extends JDialog implements PropertyChangeListener {
     
     private static final Logger logger = Logger.getLogger(TitleWindowNB.class.getName());
-    
+
+    private static final String javaVersion = System.getProperty("java.version");
+    private static final String javaVendor = System.getProperty("java.vendor");
+        
     private static final long serialVersionUID = 1L;
     
     public TitleWindowNB(JFrame owner) {
@@ -59,7 +62,6 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
-                TitleWindowNB.this.setVisible(false);
                 TitleWindowNB.this.dispose();
             }
             
@@ -80,10 +82,8 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         int num = new Random(System.currentTimeMillis()).nextInt(8);
         ImageIcon image = new ImageIcon(getClass().getResource("/artofillusion/titleImages/titleImage" + num + ".jpg"));
 
-        Runtime runtime = Runtime.getRuntime();
+        final Runtime runtime = Runtime.getRuntime();
         int cpuCount = runtime.availableProcessors();
-        String javaVersion = System.getProperty("java.version");
-        String javaVendor = System.getProperty("java.vendor");
         
         StringBuilder extra = new StringBuilder();
         extra.append("<hr/>").append(Translate.text("about.java.version", javaVersion, javaVendor)).append("<br/>");
@@ -92,7 +92,8 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         long allocated = runtime.totalMemory() / 0x100000L;
         long max =  runtime.maxMemory() / 0x100000L;
         extra.append(Translate.text("about.system.memory", used, allocated, max)).append("<br/>");
-        extra.append(Translate.text("about.system.cpus", runtime.availableProcessors())).append("<br/>");
+        extra.append(Translate.text("about.system.cpus", cpuCount)).append("<br/>");
+        
         Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         
         String text = "<html>"
