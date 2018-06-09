@@ -92,6 +92,7 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         long allocated = runtime.totalMemory() / 0x100000L;
         long max =  runtime.maxMemory() / 0x100000L;
         extra.append(Translate.text("about.system.memory", used, allocated, max)).append("<br/>");
+        extra.append(Translate.text("about.system.cpus", runtime.availableProcessors())).append("<br/>");
         Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         
         String text = "<html>"
