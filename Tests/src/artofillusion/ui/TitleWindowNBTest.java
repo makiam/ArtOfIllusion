@@ -43,9 +43,11 @@ public class TitleWindowNBTest {
     @Test
     @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public void testShowTitleWindow() throws InterruptedException {
-
-        SwingUtilities.invokeLater(() -> {
-            new TitleWindowNB();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new TitleWindowNB();
+            }            
         });
         Thread.sleep(2000);
         JOptionPane.showMessageDialog(null, "Switch");
