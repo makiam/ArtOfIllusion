@@ -43,15 +43,24 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
     private static final String javaVendor = System.getProperty("java.vendor");
         
     private static final long serialVersionUID = 1L;
+    private boolean showExtraData = false;
+    private JLabel label;
     
-    public TitleWindowNB(JFrame owner) {
+    public TitleWindowNB(JFrame owner, boolean showExtraData) {
         super(owner, "Art OF Illusion", ModalityType.DOCUMENT_MODAL);
+        this.showExtraData = showExtraData;
+        label.setText(showExtraData ? "Extra" : "Dummy");
     }
     
     public TitleWindowNB() {
-        this((JFrame)null);
+        this((JFrame)null, false);
     }
 
+    public TitleWindowNB(boolean showExtraData) {
+        this((JFrame)null, showExtraData);
+        
+    }
+    
     @Override
     protected void dialogInit() {
         
@@ -80,6 +89,7 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
             
         });
         int num = new Random(System.currentTimeMillis()).nextInt(8);
+        Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
         ImageIcon image = new ImageIcon(getClass().getResource("/artofillusion/titleImages/titleImage" + num + ".jpg"));
 
         final Runtime runtime = Runtime.getRuntime();
@@ -94,8 +104,6 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
         extra.append(Translate.text("about.system.memory", used, allocated, max)).append("<br/>");
         extra.append(Translate.text("about.system.cpus", cpuCount)).append("<br/>");
         
-        Color background = num == 4 ? new Color(204, 204, 255) : (num == 6 ? new Color(232, 255, 232) : Color.WHITE);
-        
         String text = "<html>"
                 + "<div align='center'>"
                 + "Art of Illusion version " + ArtOfIllusion.getVersion()
@@ -104,10 +112,10 @@ public class TitleWindowNB extends JDialog implements PropertyChangeListener {
                 + "<br>This program may be freely distributed under"
                 + "<br>the terms of the accompanying license."
                 + "</div>"
-                + extra.toString()
+                + (showExtraData ? extra.toString() : "")
                 + "</html>";
         
-        JLabel label = new JLabel(text,image,JLabel.CENTER);
+        label = new JLabel(text,image,JLabel.CENTER);
         
         label.setBorder(new EmptyBorder(0,0,5,0));
         label.setVerticalTextPosition(JLabel.BOTTOM);
