@@ -1,4 +1,5 @@
 /* Copyright (C) 2003-2009 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -300,7 +301,7 @@ public class CameraFilterDialog extends BDialog implements RenderListener
     {
       super(1, 2);
       this.filterChangedCallback = filterChangedCallback;
-      filters = new ArrayList<ImageFilter>();
+      filters = new ArrayList<>();
       ImageFilter oldFilters[] = camera.getImageFilters();
       for (int i = 0; i < oldFilters.length; i++)
         filters.add(oldFilters[i]);

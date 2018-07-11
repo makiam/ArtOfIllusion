@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2008 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -311,7 +311,7 @@ public class ProceduralPointLight extends PointLight
     public ProceduralLightKeyframe(ProceduralPointLight light)
     {
       this.light = light;
-      paramValues = new HashMap<TextureParameter, Double>();
+      paramValues = new HashMap<>();
       for (int i = 0; i < light.parameters.length; i++)
         paramValues.put(light.parameters[i], light.parameterValues[i]);
       radius = light.getRadius();

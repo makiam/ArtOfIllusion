@@ -1,4 +1,5 @@
 /* Copyright (C) 2002-2012 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -191,9 +192,9 @@ public abstract class ObjectCollection extends Object3D
   @Override
   public TriangleMesh convertToTriangleMesh(double tol)
   {
-    ArrayList<Vec3> allVert = new ArrayList<Vec3>();
-    ArrayList<Float> vertSmoothness = new ArrayList<Float>();
-    ArrayList<int[]> allFace = new ArrayList<int[]>();
+    ArrayList<Vec3> allVert = new ArrayList<>();
+    ArrayList<Float> vertSmoothness = new ArrayList<>();
+    ArrayList<int[]> allFace = new ArrayList<>();
     class Edge {
       public int v1, v2;
       public float smoothness;
@@ -204,7 +205,7 @@ public abstract class ObjectCollection extends Object3D
         this.smoothness = smoothness;
       }
     }
-    ArrayList<Edge> edgeSmoothness = new ArrayList<Edge>();
+    ArrayList<Edge> edgeSmoothness = new ArrayList<>();
     int start = 0;
     Enumeration objects = getObjects(new ObjectInfo(this, lastCoords, ""), false, lastScene);
     while (objects.hasMoreElements())

@@ -1,5 +1,6 @@
 /* Copyright (C) 1999-2009 by Peter Eastman
    Modifications Copyright (C) 2016-2017 Petri Ihalainen
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -1719,7 +1720,7 @@ public class SoftwareCanvasDrawer implements CanvasDrawer
           tri[index+1] = new UniformTriangle(i+j*width, i+1+(j+1)*width, i+(j+1)*width, 0, 0, 0);
         }
       mesh = new RenderingMesh(vert, norm, tri, null, null);
-      imageMeshMap.put(image, new SoftReference<RenderingMesh>(mesh));
+      imageMeshMap.put(image, new SoftReference<>(mesh));
     }
     else
     {
@@ -1778,7 +1779,7 @@ public class SoftwareCanvasDrawer implements CanvasDrawer
       try
       {
         record = new ImageRecord(image);
-        imageMap.put(image, new SoftReference<ImageRecord>(record));
+        imageMap.put(image, new SoftReference<>(record));
       }
       catch (InterruptedException ex)
       {

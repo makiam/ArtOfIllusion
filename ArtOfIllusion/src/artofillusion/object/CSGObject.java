@@ -1,4 +1,5 @@
 /* Copyright (C) 2001-2012 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -332,8 +333,8 @@ public class CSGObject extends Object3D
         from[i] = edge[i].v2;
       }
     WireframeMesh wire = new WireframeMesh(rendering.vert, from, to);
-    cachedMesh = new SoftReference<RenderingMesh>(rendering);
-    cachedWire = new SoftReference<WireframeMesh>(wire);
+    cachedMesh = new SoftReference<>(rendering);
+    cachedWire = new SoftReference<>(wire);
     return new Object[] {rendering, wire}; // Return these to make sure the references don't get cleared instantly.
   }
 

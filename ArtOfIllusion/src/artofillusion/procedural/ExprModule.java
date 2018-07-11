@@ -326,7 +326,7 @@ public class ExprModule extends Module
           new String [] {"Calculate:"});
         if (!dlg.clickedOk())
             return false;
-        errors = new ArrayList<String>();
+        errors = new ArrayList<>();
         try
         {
           setExpr (exprField.getText().toLowerCase ());
@@ -449,8 +449,8 @@ public class ExprModule extends Module
     }
 
     void initVarTable () {
-        varTable = new HashMap<String, OPort>();
-        moduleVec = new ArrayList<Module>();
+        varTable = new HashMap<>();
+        moduleVec = new ArrayList<>();
 
         CoordinateModule x, y, z, t;
         x = (CoordinateModule) ModuleLoader.createModule (CoordinateModule.class);

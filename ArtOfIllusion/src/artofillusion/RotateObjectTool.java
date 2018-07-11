@@ -69,7 +69,7 @@ public class RotateObjectTool extends EditingTool
     int i, numSelected = 0, sel[];
     Vec3 center = new Vec3();
 
-    toMove = new ArrayList<ObjectInfo>();
+    toMove = new ArrayList<>();
     clickedObject = theScene.getObject(obj);
     if (applyToChildren)
       sel = theScene.getSelectionWithChildren();
@@ -237,7 +237,7 @@ public class RotateObjectTool extends EditingTool
       sel = theScene.getSelectionWithChildren();
     else
       sel = theScene.getSelection();
-    toMove = new ArrayList<ObjectInfo>();
+    toMove = new ArrayList<>();
     for (int i = 0; i < sel.length; i++)
       toMove.add(theScene.getObject(sel[i]));
     rotationCenter = new Vec3 [toMove.size()];

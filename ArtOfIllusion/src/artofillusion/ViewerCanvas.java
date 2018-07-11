@@ -123,7 +123,7 @@ public abstract class ViewerCanvas extends CustomWidget
   {
     CoordinateSystem coords = new CoordinateSystem(new Vec3(0.0, 0.0, Camera.DEFAULT_DISTANCE_TO_SCREEN), new Vec3(0.0, 0.0, -1.0), Vec3.vy());
     viewChangedEvent = new ViewChangedEvent(this);
-    controlMap = new HashMap<ViewerControl,Widget>();
+    controlMap = new HashMap<>();
     theCamera = new Camera();
     theCamera.setCameraCoordinates(coords);
 	finder = new ClickedPointFinder();
@@ -1998,14 +1998,14 @@ public abstract class ViewerCanvas extends CustomWidget
 
 		/* Create emply point list */
 		private void newPoints(){
-			points = new ArrayList<Vec3>();
-			pointColors = new ArrayList<Color>();
+			points = new ArrayList<>();
+			pointColors = new ArrayList<>();
 		}
 			
 		/* Create emply point list */
 		private void newLines(){
-			lines = new ArrayList<Vec3[]>();
-			lineColors = new ArrayList<Color>();
+			lines = new ArrayList<>();
+			lineColors = new ArrayList<>();
 		}
 		/** 
 			Create contents using the given view<p>

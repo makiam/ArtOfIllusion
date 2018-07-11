@@ -1,4 +1,5 @@
 /* Copyright (C) 2011 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -43,7 +44,7 @@ public class ModuleMenu extends CustomWidget
     addEventLink(MousePressedEvent.class, this, "mousePressed");
     addEventLink(MouseDraggedEvent.class, this, "mouseDragged");
     addEventLink(MouseReleasedEvent.class, this, "mouseReleased");
-    categories = new ArrayList<Category>();
+    categories = new ArrayList<>();
     Category category;
     categories.add(category = new Category(Translate.text("menu.values")));
     category.add(new Entry(Translate.text("menu.numberModule"), NumberModule.class));
@@ -318,7 +319,7 @@ public class ModuleMenu extends CustomWidget
     public Category(String name)
     {
       this.name = name;
-      entries = new ArrayList<Entry>();
+      entries = new ArrayList<>();
     }
 
     public void add(Entry entry)

@@ -1,4 +1,5 @@
 /* Copyright (C) 2004-2009 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -196,7 +197,7 @@ public class UIUtilities
     if (lines < 2)
       return new String [] {s};
     int lineLength = s.length()/lines;
-    List<String> line = new ArrayList<String>();
+    List<String> line = new ArrayList<>();
     int index = 0;
     while (index+lineLength < s.length())
     {
@@ -231,7 +232,7 @@ public class UIUtilities
 
   public static List<Widget> findAllChildren(Widget w)
   {
-    ArrayList<Widget> list = new ArrayList<Widget>();
+    ArrayList<Widget> list = new ArrayList<>();
     addChildrenToList(w, list);
     return list;
   }

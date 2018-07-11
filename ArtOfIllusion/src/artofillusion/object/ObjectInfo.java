@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2013 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -90,7 +91,7 @@ public class ObjectInfo
   public static ObjectInfo [] duplicateAll(ObjectInfo info[])
   {
     ObjectInfo newobj[] = new ObjectInfo [info.length];
-    HashMap<ObjectInfo, ObjectInfo> objectMap = new HashMap<ObjectInfo, ObjectInfo>();
+    HashMap<ObjectInfo, ObjectInfo> objectMap = new HashMap<>();
     for (int i = 0; i < newobj.length; i++)
     {
       newobj[i] = info[i].duplicate(info[i].getObject().duplicate());
@@ -342,7 +343,7 @@ public class ObjectInfo
         double tol = ArtOfIllusion.getPreferences().getInteractiveSurfaceError();
         Object3D obj = getDistortedObject(tol);
         cached = obj.getRenderingMesh(tol, true, this);
-        cachedMesh = new SoftReference<RenderingMesh>(cached);
+        cachedMesh = new SoftReference<>(cached);
         if (cachedBounds == null)
           cachedBounds = obj.getBounds();
       }
@@ -365,7 +366,7 @@ public class ObjectInfo
         double tol = ArtOfIllusion.getPreferences().getInteractiveSurfaceError();
         Object3D obj = getDistortedObject(tol);
         cached = obj.getWireframeMesh();
-        cachedWire = new SoftReference<WireframeMesh>(cached);
+        cachedWire = new SoftReference<>(cached);
         if (cachedBounds == null)
           cachedBounds = obj.getBounds();
       }
@@ -391,9 +392,9 @@ public class ObjectInfo
         if (!(realObject instanceof ObjectCollection))
         {
           if (lastPreviewWasWireframe && cachedWire == null)
-            cachedWire = new SoftReference<WireframeMesh>(obj.getWireframeMesh());
+            cachedWire = new SoftReference<>(obj.getWireframeMesh());
           else if (!lastPreviewWasWireframe && cachedMesh == null)
-            cachedMesh = new SoftReference<RenderingMesh>(obj.getRenderingMesh(tol, true, this));
+            cachedMesh = new SoftReference<>(obj.getRenderingMesh(tol, true, this));
         }
       }
     return cachedBounds;

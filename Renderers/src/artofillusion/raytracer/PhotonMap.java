@@ -1,4 +1,5 @@
 /* Copyright (C) 2003-2013 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -126,7 +127,7 @@ public class PhotonMap
 
     // Generate photons.
 
-    photonList = new ArrayList<Photon>((int) (1.1*numWanted));
+    photonList = new ArrayList<>((int) (1.1*numWanted));
     int iteration = 0;
     ThreadManager threads = new ThreadManager();
     try

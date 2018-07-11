@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2013 by Peter Eastman
    Changes Copyright (C) 2016 by Petri Ihalainen
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -103,13 +103,13 @@ public class KeystrokeManager
     {
       // We need to build an index for quickly looking up KeystrokeRecords.
 
-      keyIndex = new HashMap<Integer, ArrayList<KeystrokeRecord>>(records.size());
+      keyIndex = new HashMap<>(records.size());
       for (KeystrokeRecord record : records)
       {
         ArrayList<KeystrokeRecord> list = keyIndex.get(record.getKeyCode());
         if (list == null)
         {
-          list = new ArrayList<KeystrokeRecord>(1);
+          list = new ArrayList<>(1);
           keyIndex.put(record.getKeyCode(), list);
         }
         list.add(record);
@@ -127,7 +127,7 @@ public class KeystrokeManager
       {
         // Execute it.
 
-        HashMap<String, Object> variables = new HashMap<String, Object>();
+        HashMap<String, Object> variables = new HashMap<>();
         variables.put("window", window);
         ScriptRunner.executeScript(record.getLanguage(), record.getScript(), variables);
         event.consume();
@@ -170,7 +170,7 @@ public class KeystrokeManager
   {
     // Build a table of existing records.
 
-    HashMap<String, KeystrokeRecord> existing = new HashMap<String, KeystrokeRecord>();
+    HashMap<String, KeystrokeRecord> existing = new HashMap<>();
     for (KeystrokeRecord record : records)
       existing.put(record.getName(), record);
 

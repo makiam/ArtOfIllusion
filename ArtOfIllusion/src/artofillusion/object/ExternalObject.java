@@ -1,5 +1,5 @@
 /* Copyright (C) 2004-2007 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -147,7 +147,7 @@ public class ExternalObject extends ObjectWrapper
         {
           // Create an ObjectCollection containing the object and all its children.
 
-          ArrayList<ObjectInfo> allObjects = new ArrayList<ObjectInfo>();
+          ArrayList<ObjectInfo> allObjects = new ArrayList<>();
           addObjectsToList(foundObject, allObjects, foundObject.getCoords().toLocal());
           theObject = new ExternalObjectCollection(allObjects);
         }

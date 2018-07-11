@@ -1211,7 +1211,7 @@ public abstract class MeshEditorWindow extends ObjectEditorWindow implements Mes
     Joint joint[] = s.getJoints();
     boolean isChild[] = new boolean [joint.length];
     markChildJoints(s, j, isChild);
-    List<Joint> options = new ArrayList<Joint>();
+    List<Joint> options = new ArrayList<>();
     for (int i = 0; i < isChild.length; i++)
       if (!isChild[i])
         options.add(joint[i]);

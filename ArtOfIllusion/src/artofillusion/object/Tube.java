@@ -473,9 +473,9 @@ public class Tube extends Curve
     if (interactive && cachedMesh != null)
       return cachedMesh;
 
-    List<MeshVertex> vert = new ArrayList<MeshVertex>();
-    List<Vec3> norm = new ArrayList<Vec3>();
-    List<int[]> face = new ArrayList<int[]>();
+    List<MeshVertex> vert = new ArrayList<>();
+    List<Vec3> norm = new ArrayList<>();
+    List<int[]> face = new ArrayList<>();
     
     List param = new ArrayList();
     
@@ -557,9 +557,9 @@ public class Tube extends Curve
   {
     // Subdivide the surface and create the triangle mesh.
 
-    List<MeshVertex> vert = new ArrayList<MeshVertex>();
-    List<Vec3> norm = new ArrayList<Vec3>();
-    List<int[]> face = new ArrayList<int[]>();
+    List<MeshVertex> vert = new ArrayList<>();
+    List<Vec3> norm = new ArrayList<>();
+    List<int[]> face = new ArrayList<>();
     
     List param = new ArrayList();
     

@@ -295,7 +295,7 @@ public class UVMappingWindow extends BDialog implements MeshEditController, Edit
     {
       FacetedMesh mesh = (FacetedMesh) editObj;
       Vec2 faceCoord[][] = map.findFaceTextureCoordinates(mesh);
-      ArrayList<Vec2> coordList = new ArrayList<Vec2>();
+      ArrayList<Vec2> coordList = new ArrayList<>();
       for (int i = 0; i < faceCoord.length; i++)
         for (int j = 0; j < faceCoord[i].length; j++)
           coordList.add(faceCoord[i][j]);
@@ -383,7 +383,7 @@ public class UVMappingWindow extends BDialog implements MeshEditController, Edit
     {
       // Convert from per-vertex to per-face-vertex mapping.
 
-      ArrayList<Vec2> coordList = new ArrayList<Vec2>();
+      ArrayList<Vec2> coordList = new ArrayList<>();
       for (int i = 0; i < mesh.getFaceCount(); i++)
         for (int j = 0; j < mesh.getFaceVertexCount(i); j++)
           coordList.add(new Vec2(coord[mesh.getFaceVertexIndex(i, j)]));

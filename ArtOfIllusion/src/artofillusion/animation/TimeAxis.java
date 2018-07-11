@@ -45,7 +45,7 @@ public class TimeAxis extends CustomWidget
     theScore = sc;
     nf.setMinimumFractionDigits(1);
     nf.setMaximumFractionDigits(2);
-    markers = new ArrayList<Marker>();
+    markers = new ArrayList<>();
     addEventLink(MousePressedEvent.class, this, "mousePressed");
     addEventLink(MouseReleasedEvent.class, this, "mouseReleased");
     addEventLink(MouseDraggedEvent.class, this, "mouseDragged");

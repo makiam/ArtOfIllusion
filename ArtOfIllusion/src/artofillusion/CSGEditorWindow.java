@@ -622,7 +622,7 @@ public class CSGEditorWindow extends ObjectEditorWindow
 	if (selected.length == 0)
 		return;
 
-	ArrayList<ObjectInfo> selection = new ArrayList<ObjectInfo>();
+	ArrayList<ObjectInfo> selection = new ArrayList<>();
 	
 	// This did not work if only object 1 was selected. Strange bug.
 	//for (int s : selected)

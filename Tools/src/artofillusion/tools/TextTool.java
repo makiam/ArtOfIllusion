@@ -1,6 +1,7 @@
 package artofillusion.tools;
 
 /* Copyright (C) 2006-2013 by Peter Eastman and Julio Sangrador-Patón
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -62,7 +63,7 @@ public class TextTool implements ModellingTool
    */
   public static ArrayList<ObjectInfo> createText(String text, String fontName, TextType type, boolean bold, boolean italic, double thickness, Texture texture)
   {
-    ArrayList<ObjectInfo> objects = new ArrayList<ObjectInfo>();
+    ArrayList<ObjectInfo> objects = new ArrayList<>();
     int style = Font.PLAIN;
     if (bold)
       style |= Font.BOLD;
@@ -77,8 +78,8 @@ public class TextTool implements ModellingTool
       for (int glyphIndex = 0; glyphIndex < glyphVector.getNumGlyphs(); glyphIndex++)
       {
         float segmentCoords[] = new float[6];
-        ArrayList<Vec3> points = new ArrayList<Vec3>();
-        ArrayList<Float> smoothnesses = new ArrayList<Float>();
+        ArrayList<Vec3> points = new ArrayList<>();
+        ArrayList<Float> smoothnesses = new ArrayList<>();
         boolean firstCurveOfGlyph = true;
         String glyphName = Character.toString(text.charAt(glyphVector.getGlyphCharIndex(glyphIndex)));
         ObjectInfo fullLetterOI = null;
@@ -233,8 +234,8 @@ public class TextTool implements ModellingTool
                 // User wants only the curves
                 objects.add(currentGlyphOI);
               }
-              points = new ArrayList<Vec3>();
-              smoothnesses = new ArrayList<Float>();
+              points = new ArrayList<>();
+              smoothnesses = new ArrayList<>();
           } // Segments loop
           pathIterator.next();
         } // Curves loop

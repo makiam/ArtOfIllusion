@@ -40,7 +40,7 @@ public class SkinTool implements ModellingTool
   {
     Scene scene = window.getScene();
     int selection[] = window.getSelectedIndices();
-    List<ObjectInfo> curves = new ArrayList<ObjectInfo>();
+    List<ObjectInfo> curves = new ArrayList<>();
 
     for (int i = 0; i < selection.length; i++)
       {

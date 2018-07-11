@@ -1,4 +1,5 @@
 /* Copyright (C) 2004-2017 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -94,7 +95,7 @@ public class TexturedVertexShader implements VertexShader
         return shader;
       }
     }
-    cachedShaderMap.put(mesh, new SoftReference<TexturedVertexShader>(this));
+    cachedShaderMap.put(mesh, new SoftReference<>(this));
     return this;
   }
 

@@ -1,4 +1,5 @@
 /* Copyright (C) 2008 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -92,7 +93,7 @@ public class ObjectSet
 
   public List<ObjectInfo> getObjects(Scene scene)
   {
-    ArrayList<ObjectInfo> list = new ArrayList<ObjectInfo>();
+    ArrayList<ObjectInfo> list = new ArrayList<>();
     for (int id : objectIDs)
     {
       ObjectInfo info = scene.getObjectById(id);

@@ -224,7 +224,7 @@ public class ObjectPropertiesPanel extends ColumnContainer
     }
     if (canSetMaterial)
     {
-      List<String> names = new ArrayList<String>();
+      List<String> names = new ArrayList<>();
       int selected = -1;
       for (int i = 0; i < scene.getNumMaterials(); i++)
       {

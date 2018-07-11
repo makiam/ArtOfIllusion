@@ -78,7 +78,7 @@ public class ScaleObjectTool extends EditingTool
     int i, sel[];
 
     opmode = OPMODE_SCALE;
-    toMove = new ArrayList<ObjectInfo>();
+    toMove = new ArrayList<>();
     clickedObject = theScene.getObject(obj);
     if (applyToChildren)
       sel = theScene.getSelectionWithChildren();
@@ -220,7 +220,7 @@ public class ScaleObjectTool extends EditingTool
     int i, sel[];
 
     opmode = OPMODE_MOVE;
-    toMove = new ArrayList<ObjectInfo>();
+    toMove = new ArrayList<>();
     clickedObject = theScene.getObject(obj);
     if (applyToChildren)
       sel = theScene.getSelectionWithChildren();
