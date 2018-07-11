@@ -33,7 +33,7 @@ public class GenericTreeElement extends TreeElement
     this.tree = tree;
     this.children = children;
     if (null == children)
-      this.children = new ArrayList<TreeElement>();
+      this.children = new ArrayList<>();
     else
       for(TreeElement item: children)
       {

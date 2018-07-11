@@ -2,7 +2,7 @@
    This also sets the default values in the dialog.*/
 
 /* Copyright 2001 Rick van der Meiden
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -126,7 +126,7 @@ public class ArraySpec
                 // set list of object to copy (all selected objects)
                 Scene scene = window.getScene();
                 int selection[] = window.getSelectedIndices();
-                objectList = new ArrayList<ObjectInfo>();         // list of objectInfo's
+                objectList = new ArrayList<>();         // list of objectInfo's
                 for (int sel=0; sel<selection.length;sel++)
                 {
                         ObjectInfo info = scene.getObject(selection[sel]);

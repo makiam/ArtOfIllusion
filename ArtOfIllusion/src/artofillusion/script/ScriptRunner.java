@@ -125,7 +125,7 @@ public class ScriptRunner
     {
       ex2.printStackTrace();
     }
-    ArrayList<String> v = new ArrayList<String>();
+    ArrayList<String> v = new ArrayList<>();
     v.add(head);
     if (message != null)
     {

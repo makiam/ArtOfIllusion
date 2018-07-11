@@ -335,7 +335,7 @@ public abstract class ObjectViewer extends ViewerCanvas
     squareBox = square;
     dragPoint = null;
     if (freehandSelection)
-      selectBoundsPoints = new ArrayList<Point>();
+      selectBoundsPoints = new ArrayList<>();
   }
 
   /** Finish dragging a selection region. */

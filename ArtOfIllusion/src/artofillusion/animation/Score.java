@@ -112,7 +112,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     int fps = window.getScene().getFramesPerSecond();
     timeScale = fps*5.0;
     theAxis = new TimeAxis(fps, timeScale, this);
-    graphs = new ArrayList<TrackDisplay>();
+    graphs = new ArrayList<>();
     timeMarker = new Marker(window.getScene().getTime(), Translate.text("Time"), Color.green);
     theAxis.addMarker(timeMarker);
     scroll = new BScrollBar(0, 0, 0, 0, BScrollBar.VERTICAL);
@@ -232,7 +232,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void addSelectedKeyframes(SelectionInfo newsel[])
   {
-    List<SelectionInfo> v = new ArrayList<SelectionInfo>();
+    List<SelectionInfo> v = new ArrayList<>();
     int i, j;
 
     for (i = 0; i < selection.length; i++)
@@ -259,7 +259,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void removeSelectedKeyframe(Keyframe key)
   {
-    List<SelectionInfo> v = new ArrayList<SelectionInfo>();
+    List<SelectionInfo> v = new ArrayList<>();
 
     for (int i = 0; i < selection.length; i++)
       if (selection[i].key != key)
@@ -611,7 +611,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
     // Find the list of tracks with selected keyframes.
 
-    List<Track> v = new ArrayList<Track>();
+    List<Track> v = new ArrayList<>();
     for (int i = 0; i < selection.length; i++)
       if (!v.contains(selection[i].track))
         v.add(selection[i].track);

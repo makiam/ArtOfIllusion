@@ -121,9 +121,9 @@ public class CSGModeller
 
   public TriangleMesh getMesh(int op, Texture texture)
   {
-    List<VertexInfo> allVert = new ArrayList<VertexInfo>();
-    List<int[]> faceIndex = new ArrayList<int[]>();
-    List<float[]> faceSmoothness = new ArrayList<float[]>();
+    List<VertexInfo> allVert = new ArrayList<>();
+    List<int[]> faceIndex = new ArrayList<>();
+    List<float[]> faceSmoothness = new ArrayList<>();
     int index1[] = new int [vert1.size()], index2[] = new int [vert2.size()];
     int firstBoundary = -1, faces1;
 

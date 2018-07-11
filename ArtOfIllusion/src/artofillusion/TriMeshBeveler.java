@@ -87,7 +87,7 @@ public class TriMeshBeveler
     Face f[] = mesh.getFaces();
     int i, j;
     List<int[]> face = new ArrayList<>();
-    List<Vertex> vert = new ArrayList<Vertex>();
+    List<Vertex> vert = new ArrayList<>();
 
     newIndex = new ArrayList();
     findVertexInsets(height, width);
@@ -201,7 +201,7 @@ public class TriMeshBeveler
     int group[], touchCount[], groupCount;
     Vec3 temp = new Vec3();
     
-    List<int[]> face = new ArrayList<int[]>();
+    List<int[]> face = new ArrayList<>();
     List<Vertex> vert = new ArrayList<>();
     List<int[]> bevel = new ArrayList<>();
     

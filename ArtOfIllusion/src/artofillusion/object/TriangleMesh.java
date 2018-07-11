@@ -624,7 +624,7 @@ public class TriangleMesh extends Object3D implements FacetedMesh
   {
     // First, find every edge which is on a boundary.
 
-    List<Integer> allEdges = new ArrayList<Integer>();
+    List<Integer> allEdges = new ArrayList<>();
     for (int i = 0; i < edge.length; i++)
       if (edge[i].f2 == -1)
         allEdges.add(i);
@@ -636,7 +636,7 @@ public class TriangleMesh extends Object3D implements FacetedMesh
       {
         // Take one edge as a starting point, and follow around.
 
-        List<Integer> current = new ArrayList<Integer>();
+        List<Integer> current = new ArrayList<>();
         Integer start = allEdges.get(0);
         allEdges.remove(0);
         current.add(start);
@@ -778,7 +778,7 @@ public class TriangleMesh extends Object3D implements FacetedMesh
         to[i] = e[i].v2;
       }
     WireframeMesh wire = new WireframeMesh(point, from, to);
-    cachedWire = new SoftReference<WireframeMesh>(wire);
+    cachedWire = new SoftReference<>(wire);
     return wire;
   }
 
@@ -1058,7 +1058,7 @@ groups:     do
     RenderingMesh rend = new RenderingMesh(vert, normalArray, tri, texMapping, matMapping);
     rend.setParameters(mesh.paramValue);
     if (interactive)
-      cachedMesh = new SoftReference<RenderingMesh>(rend);
+      cachedMesh = new SoftReference<>(rend);
     return rend;
   }
 

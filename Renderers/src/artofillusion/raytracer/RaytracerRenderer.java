@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2014 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -477,7 +478,7 @@ public class RaytracerRenderer implements Renderer, Runnable
   @Override
   public Map<String, Object> getConfiguration()
   {
-    HashMap<String, Object> map = new HashMap<String, Object>();
+    HashMap<String, Object> map = new HashMap<>();
     map.put("maxRayDepth", maxRayDepth);
     map.put("minRayIntensity", minRayIntensity);
     map.put("materialStepSize", stepSize);
@@ -721,7 +722,7 @@ public class RaytracerRenderer implements Renderer, Runnable
   protected void generatePhotons(PhotonMap map)
   {
     List<PhotonSourceFactory> factories = PluginRegistry.getPlugins(PhotonSourceFactory.class);
-    ArrayList<PhotonSource> sources = new ArrayList<PhotonSource>();
+    ArrayList<PhotonSource> sources = new ArrayList<>();
     for (RTLight lt : raytracer.getLights())
     {
       // First give plugins a chance to handle it.
@@ -745,7 +746,7 @@ public class RaytracerRenderer implements Renderer, Runnable
       else if (lt.getLight() instanceof SpotLight)
         sources.add(new SpotlightPhotonSource((SpotLight) lt.getLight(), lt.getCoords(), map));
     }
-    ArrayList<PhotonSource> objectSources = new ArrayList<PhotonSource>();
+    ArrayList<PhotonSource> objectSources = new ArrayList<>();
     for (RTObject obj : raytracer.getObjects())
     {
       // First give plugins a chance to handle it.

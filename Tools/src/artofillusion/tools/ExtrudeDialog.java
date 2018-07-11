@@ -1,5 +1,5 @@
 /* Copyright (C) 2001-2005 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -50,8 +50,8 @@ public class ExtrudeDialog extends BDialog
     // Identify the objects that can be extruded, and the paths along which they can be
     // extruded.
 
-    objects = new ArrayList<ObjectInfo>();
-    paths = new ArrayList<ObjectInfo>();
+    objects = new ArrayList<>();
+    paths = new ArrayList<>();
     for (int i = 0; i < selection.length; i++)
     {
       ObjectInfo obj = scene.getObject(selection[i]);
@@ -599,8 +599,8 @@ public class ExtrudeDialog extends BDialog
       v = new Vec3 [numBoundaryPoints*pathv.length];
     else
       v = new Vec3 [2*profv.length+numBoundaryPoints*(pathv.length-2)];
-    List<EdgeInfo> newEdge = new ArrayList<EdgeInfo>();
-    List<int[]> newFace = new ArrayList<int[]>();
+    List<EdgeInfo> newEdge = new ArrayList<>();
+    List<int[]> newFace = new ArrayList<>();
     boolean angled = (profile.getSmoothingMethod() == Mesh.NO_SMOOTHING && path.getSmoothingMethod() != Mesh.NO_SMOOTHING);
     if (!path.isClosed())
       {

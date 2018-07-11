@@ -63,14 +63,14 @@ public class Scene
   {
     UniformTexture defTex = new UniformTexture();
 
-    objects = new ArrayList<ObjectInfo>();
-    materials = new ArrayList<Material>();
-    textures = new ArrayList<Texture>();
-    images = new ArrayList<ImageMap>();
-    selection = new ArrayList<Integer>();
-    metadataMap = new HashMap<String, Object>();
-    textureListeners = new ArrayList<ListChangeListener>();
-    materialListeners = new ArrayList<ListChangeListener>();
+    objects = new ArrayList<>();
+    materials = new ArrayList<>();
+    textures = new ArrayList<>();
+    images = new ArrayList<>();
+    selection = new ArrayList<>();
+    metadataMap = new HashMap<>();
+    textureListeners = new ArrayList<>();
+    materialListeners = new ArrayList<>();
     defTex.setName("Default Texture");
     textures.add(defTex);
     ambientColor = new RGBColor(0.3f, 0.3f, 0.3f);
@@ -989,7 +989,7 @@ public class Scene
     {
       // Build an index for fast lookup.
 
-      objectIndexMap = new HashMap<ObjectInfo, Integer>();
+      objectIndexMap = new HashMap<>();
       for (int i = 0; i < objects.size(); i++)
         objectIndexMap.put(objects.get(i), i);
     }
@@ -1008,7 +1008,7 @@ public class Scene
   
   public List<ObjectInfo> getCameras()
   {
-    List<ObjectInfo> list = new ArrayList<ObjectInfo>();
+    List<ObjectInfo> list = new ArrayList<>();
     for(ObjectInfo sceneObject: objects)
     {        
         if(sceneObject.getObject() instanceof SceneCamera)
@@ -1233,7 +1233,7 @@ public class Scene
     // Read the image maps.
 
     count = in.readInt();
-    images = new ArrayList<ImageMap>(count);
+    images = new ArrayList<>(count);
     for (int i = 0; i < count; i++)
     {
         if (version == 0)
@@ -1259,7 +1259,7 @@ public class Scene
     // Read the materials.
 
     count = in.readInt();
-    materials = new ArrayList<Material>(count);
+    materials = new ArrayList<>(count);
     for (int i = 0; i < count; i++)
       {
         try
@@ -1299,7 +1299,7 @@ public class Scene
     // Read the textures.
 
     count = in.readInt();
-    textures = new ArrayList<Texture>(count);
+    textures = new ArrayList<>(count);
     for (int i = 0; i < count; i++)
       {
         try
@@ -1339,12 +1339,12 @@ public class Scene
     // Read the objects.
 
     count = in.readInt();
-    objects = new ArrayList<ObjectInfo>(count);
-    table = new HashMap<Integer, Object3D>(count);
+    objects = new ArrayList<>(count);
+    table = new HashMap<>(count);
     for (int i = 0; i < count; i++)
       objects.add(readObjectFromFile(in, table, version));
     objectIndexMap = null;
-    selection = new ArrayList<Integer>();
+    selection = new ArrayList<>();
 
     // Read the list of children for each object.
 
@@ -1406,7 +1406,7 @@ public class Scene
 
     // Read the metadata.
 
-    metadataMap = new HashMap<String, Object>();
+    metadataMap = new HashMap<>();
     if (version > 3)
     {
       count = in.readInt();
@@ -1430,8 +1430,8 @@ public class Scene
         }
       }
     }
-    textureListeners = new ArrayList<ListChangeListener>();
-    materialListeners = new ArrayList<ListChangeListener>();
+    textureListeners = new ArrayList<>();
+    materialListeners = new ArrayList<>();
     setTime(0.0);
   }
 
@@ -1553,7 +1553,7 @@ public class Scene
     
    
     int i, j, index = 0;
-    Map<Object3D, Integer> table = new HashMap<Object3D, Integer>(objects.size());
+    Map<Object3D, Integer> table = new HashMap<>(objects.size());
 
     out.writeShort(4);
     ambientColor.writeToFile(out);

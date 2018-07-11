@@ -125,7 +125,7 @@ public class PreferencesWindow
 	//useViewAnimationsBox.addEventLink(ValueChangedEvent.class, this, "useViewAnimationsChanged");
 	//animationDurationField.addEventLink(ValueChangedEvent.class, this, "animationDurationChanged");
 
-    themes = new ArrayList<ThemeManager.ThemeInfo>();
+    themes = new ArrayList<>();
     for (ThemeManager.ThemeInfo theme: ThemeManager.getThemes())
     {
       if (theme.selectable)

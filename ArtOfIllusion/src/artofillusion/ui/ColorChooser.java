@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2011 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -55,7 +55,7 @@ public class ColorChooser extends BDialog
       mode = 1;
       rangeMode = 0;
     }
-    recentColors = new ArrayList<RGBColor>();
+    recentColors = new ArrayList<>();
     for (int i = 0; i < RECENT_COLOR_COUNT; i++)
     {
       recentColors.add(new RGBColor(1.0, 1.0, 1.0));

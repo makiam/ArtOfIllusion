@@ -164,7 +164,7 @@ public class IKSolver
     downstream = new int [joint.length][];
     for (int i = 0; i < joint.length; i++)
     {
-      List<Joint> v = new ArrayList<Joint>();
+      List<Joint> v = new ArrayList<>();
       addDownstreamJoints(v, joint[i]);
       downstream[i] = new int [v.size()];
       for (int k = 0; k < downstream[i].length; k++)

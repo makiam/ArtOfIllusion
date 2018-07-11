@@ -1,4 +1,5 @@
 /* Copyright (C) 2005-2017 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
@@ -42,9 +43,9 @@ public class GLCanvasDrawer implements CanvasDrawer
   private FloatBuffer vertBuffer, normBuffer;
   private Shape draggedShape;
   private GLImage template;
-  private WeakHashMap<Image, GLTexture> textureMap = new WeakHashMap<Image, GLTexture>();
+  private WeakHashMap<Image, GLTexture> textureMap = new WeakHashMap<>();
   private ReferenceQueue textureCleanupQueue = new ReferenceQueue();
-  private HashSet<TextureReference> textureReferences = new HashSet<TextureReference>();
+  private HashSet<TextureReference> textureReferences = new HashSet<>();
 
   private static final float COLOR_SCALE = 1.0f/255.0f;
   private static HashMap<String, SoftReference<GLImage>> textImageMap = new HashMap<String, SoftReference<GLImage>>();
@@ -725,7 +726,7 @@ public class GLCanvasDrawer implements CanvasDrawer
         ex.printStackTrace();
         return;
       }
-      textImageMap.put(text, new SoftReference<GLImage>(image));
+      textImageMap.put(text, new SoftReference<>(image));
     }
     drawImage(image, x, y-ascent);
   }
@@ -827,7 +828,7 @@ public class GLCanvasDrawer implements CanvasDrawer
       // Grab the pixels from the image and cache them.
 
       record = new GLImage(sourceImage);
-      imageMap.put(image, new SoftReference<GLImage>(record));
+      imageMap.put(image, new SoftReference<>(record));
     }
     return record;
   }

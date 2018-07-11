@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2015 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -800,7 +800,7 @@ public class SplineMesh extends Object3D implements Mesh
           to[k++] = i+udim*(vdim-1);
         }
     WireframeMesh wire = new WireframeMesh(point, from, to);
-    cachedWire = new SoftReference<WireframeMesh>(wire);
+    cachedWire = new SoftReference<>(wire);
     return wire;
   }
 
@@ -833,7 +833,7 @@ public class SplineMesh extends Object3D implements Mesh
 
     // Construct the list of normals.
 
-    ArrayList<Vec3> normal = new ArrayList<Vec3>(point.length);
+    ArrayList<Vec3> normal = new ArrayList<>(point.length);
     normIndex = new int [udim][vdim][4];
     k = 0;
     for (i = 0; i < udim; i++)
@@ -947,7 +947,7 @@ public class SplineMesh extends Object3D implements Mesh
     mesh = new RenderingMesh(point, norm, tri, texMapping, matMapping);
     mesh.setParameters(newmesh.paramValue);
     if (interactive)
-      cachedMesh = new SoftReference<RenderingMesh>(mesh);
+      cachedMesh = new SoftReference<>(mesh);
     return mesh;
   }
 

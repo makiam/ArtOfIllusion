@@ -1,4 +1,5 @@
 /* Copyright (C) 2006-2013 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -149,8 +150,8 @@ public abstract class ImplicitObject extends Object3D
   @Override
   public TriangleMesh convertToTriangleMesh(double tol)
   {
-    ArrayList<Vec3> vertices = new ArrayList<Vec3>();
-    ArrayList<int[]> faces = new ArrayList<int[]>();
+    ArrayList<Vec3> vertices = new ArrayList<>();
+    ArrayList<int[]> faces = new ArrayList<>();
     generateMesh(tol, vertices, faces);
     Vec3 vert[] = vertices.toArray(new Vec3[vertices.size()]);
     int face[][] = faces.toArray(new int[faces.size()][]);
@@ -172,8 +173,8 @@ public abstract class ImplicitObject extends Object3D
       if (cells > 1e6)
         tol = Math.pow(volume/1e6, 1.0/3.0);
     }
-    ArrayList<Vec3> vertices = new ArrayList<Vec3>();
-    ArrayList<int[]> faces = new ArrayList<int[]>();
+    ArrayList<Vec3> vertices = new ArrayList<>();
+    ArrayList<int[]> faces = new ArrayList<>();
     generateMesh(tol, vertices, faces);
     RenderingTriangle tri[] = new RenderingTriangle[faces.size()];
     Vec3 vert[] = vertices.toArray(new Vec3[vertices.size()]);
@@ -204,7 +205,7 @@ public abstract class ImplicitObject extends Object3D
       RenderingMesh mesh = cachedMesh;
       if (mesh == null)
         mesh = getRenderingMesh(ArtOfIllusion.getPreferences().getInteractiveSurfaceError(), false, null);
-      HashSet<Point> edges = new HashSet<Point>();
+      HashSet<Point> edges = new HashSet<>();
       for (RenderingTriangle tri : mesh.triangle)
       {
         edges.add(new Point(Math.min(tri.v1, tri.v2), Math.max(tri.v1, tri.v2)));
@@ -556,9 +557,9 @@ public abstract class ImplicitObject extends Object3D
     double zscale = (bounds.maxz-bounds.minz)/zsize;
     double cornerValues[] = new double[8];
     int edgeVertIndex[] = new int[12];
-    HashMap<Integer, Integer> xEdgeVertMap = new HashMap<Integer, Integer>();
-    HashMap<Integer, Integer> yEdgeVertMap = new HashMap<Integer, Integer>();
-    HashMap<Integer, Integer> zEdgeVertMap = new HashMap<Integer, Integer>();
+    HashMap<Integer, Integer> xEdgeVertMap = new HashMap<>();
+    HashMap<Integer, Integer> yEdgeVertMap = new HashMap<>();
+    HashMap<Integer, Integer> zEdgeVertMap = new HashMap<>();
     double cutoff = getCutoff();
 
     // Look up the values for the x==minx plane.

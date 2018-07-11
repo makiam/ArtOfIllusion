@@ -684,7 +684,7 @@ public class TriMeshEditorWindow extends MeshEditorWindow
 
         // Now trace along the edges to find the other one.
 
-        ArrayList<Integer> sequential = new ArrayList<Integer>();
+        ArrayList<Integer> sequential = new ArrayList<>();
         int currentEdge = specialEdge[i];
         int v2 = -1;
         while (true)
@@ -860,7 +860,7 @@ public class TriMeshEditorWindow extends MeshEditorWindow
           return 0;
         }
       }
-    List<EdgeScore> scoreList = new ArrayList<EdgeScore>(e.length);
+    List<EdgeScore> scoreList = new ArrayList<>(e.length);
     Vec3 temp0 = new Vec3(), temp1 = new Vec3(), temp2 = new Vec3();
     for (int i = 0; i < e.length; i++)
       {
@@ -2199,7 +2199,7 @@ public class TriMeshEditorWindow extends MeshEditorWindow
     Vertex vt[] = (Vertex []) theMesh.getVertices();
     Face fc[] = theMesh.getFaces();
     List<Integer> faces = new ArrayList<>();
-    TreeSet<Integer> vertices = new TreeSet<Integer>();
+    TreeSet<Integer> vertices = new TreeSet<>();
 
     if (selectMode != FACE_MODE)
       return;

@@ -331,7 +331,7 @@ public class OBJImporter
 
         // Set the texture.  Begin by finding all textures used by the group.
 
-        HashSet<String> texNames = new HashSet<String>();
+        HashSet<String> texNames = new HashSet<>();
         for (FaceInfo faceInfo : groupFaces)
           if (faceInfo.texture != null)
             texNames.add(faceInfo.texture);
@@ -480,7 +480,7 @@ public class OBJImporter
   private static String [] breakLine(String line)
   {
     StringTokenizer st = new StringTokenizer(line);
-    List<String> v = new ArrayList<String>();
+    List<String> v = new ArrayList<>();
 
     while (st.hasMoreTokens())
       v.add(st.nextToken());    

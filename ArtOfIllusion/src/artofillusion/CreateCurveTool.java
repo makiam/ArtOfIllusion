@@ -107,8 +107,8 @@ public class CreateCurveTool extends EditingTool
   {
     if (clickPoint == null)
     {
-      clickPoint = new ArrayList<Vec3>();
-      smoothness = new ArrayList<Float>();
+      clickPoint = new ArrayList<>();
+      smoothness = new ArrayList<>();
       view.repaint();
     }
     else

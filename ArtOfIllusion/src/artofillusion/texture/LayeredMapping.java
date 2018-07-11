@@ -108,7 +108,7 @@ public class LayeredMapping extends TextureMapping
   @Override
   public TextureParameter[] getParameters()
   {
-    List<TextureParameter> param = new ArrayList<TextureParameter>();
+    List<TextureParameter> param = new ArrayList<>();
     TextureParameter p[];
     int i, j;
 

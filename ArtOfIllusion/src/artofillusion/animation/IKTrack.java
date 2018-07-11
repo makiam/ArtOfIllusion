@@ -210,7 +210,7 @@ public class IKTrack extends Track
   @Override
   public ObjectInfo [] getDependencies()
   {
-    List<ObjectInfo> v = new ArrayList<ObjectInfo>();
+    List<ObjectInfo> v = new ArrayList<>();
     for (Constraint item: constraints)
     {
       if (item.target == null) continue;
@@ -332,7 +332,7 @@ public class IKTrack extends Track
     {
       super(win, Translate.text("ikTrackTitle"), true);
       window = win;
-      tempConstraints = new ArrayList<Constraint>();
+      tempConstraints = new ArrayList<>();
       for (Constraint item: constraints)
         tempConstraints.add(item.duplicate());
 

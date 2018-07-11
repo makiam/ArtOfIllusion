@@ -1,4 +1,5 @@
 /* Copyright (C) 2015 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -26,7 +27,7 @@ public class SeamFinder
   public SeamFinder(TriangleMesh mesh)
   {
     this.mesh = mesh;
-    seamEdges = new ArrayList<Integer>();
+    seamEdges = new ArrayList<>();
     ArrayList<HashSet<Integer>> surface = findSurfaces();
     computeEdgeVisibility();
     computeVertexDistortion();
@@ -41,7 +42,7 @@ public class SeamFinder
 
   private ArrayList<HashSet<Integer>> findSurfaces()
   {
-    ArrayList<HashSet<Integer>> surfaces = new ArrayList<HashSet<Integer>>();
+    ArrayList<HashSet<Integer>> surfaces = new ArrayList<>();
     TriangleMesh.Edge meshEdge[] = mesh.getEdges();
     TriangleMesh.Face meshFace[] = mesh.getFaces();
     boolean assigned[] = new boolean[meshFace.length];
@@ -53,7 +54,7 @@ public class SeamFinder
 
       // This face is not part of any surface, so begin a new one.
 
-      HashSet<Integer> surface = new HashSet<Integer>();
+      HashSet<Integer> surface = new HashSet<>();
       surfaces.add(surface);
       int boundarySize = 0;
       boundary[boundarySize++] = i;
@@ -141,8 +142,8 @@ public class SeamFinder
     {
       // Start by finding a patch immediately surrounding this vertex.
 
-      HashSet<Integer> faces = new HashSet<Integer>();
-      HashSet<Integer> edges = new HashSet<Integer>();
+      HashSet<Integer> faces = new HashSet<>();
+      HashSet<Integer> edges = new HashSet<>();
       int vertEdges[] = ((TriangleMesh.Vertex) meshVertex[vertIndex]).getEdges();
       for (int edgeIndex : vertEdges)
       {
@@ -173,7 +174,7 @@ public class SeamFinder
       {
         // Find all faces adjacent to the group.
 
-        HashSet<Integer> neighbors = new HashSet<Integer>();
+        HashSet<Integer> neighbors = new HashSet<>();
         for (int edgeIndex : edges)
         {
           TriangleMesh.Edge edge = meshEdge[edgeIndex];
@@ -192,7 +193,7 @@ public class SeamFinder
         // Add faces to the group.
 
         faces.addAll(neighbors);
-        HashSet<Integer> addedEdges = new HashSet<Integer>();
+        HashSet<Integer> addedEdges = new HashSet<>();
         for (int faceIndex : neighbors)
         {
           TriangleMesh.Face face = meshFace[faceIndex];
@@ -228,9 +229,9 @@ public class SeamFinder
 
     MeshVertex meshVertex[] = mesh.getVertices();
     TriangleMesh.Edge meshEdge[] = mesh.getEdges();
-    HashSet<Integer> remainingEdges = new HashSet<Integer>(edges);
-    ArrayList<HashSet<Integer>> loopEdges = new ArrayList<HashSet<Integer>>();
-    ArrayList<HashSet<Integer>> loopVerts = new ArrayList<HashSet<Integer>>();
+    HashSet<Integer> remainingEdges = new HashSet<>(edges);
+    ArrayList<HashSet<Integer>> loopEdges = new ArrayList<>();
+    ArrayList<HashSet<Integer>> loopVerts = new ArrayList<>();
     while (remainingEdges.size() > 0)
     {
       // Search for an edge that can be added to an existing loop.
@@ -265,8 +266,8 @@ public class SeamFinder
       {
         // We didn't find one, so create a new loop starting from the first edge.
 
-        HashSet<Integer> newLoopEdges = new HashSet<Integer>();
-        HashSet<Integer> newLoopVerts = new HashSet<Integer>();
+        HashSet<Integer> newLoopEdges = new HashSet<>();
+        HashSet<Integer> newLoopVerts = new HashSet<>();
         int edgeIndex = remainingEdges.iterator().next();
         TriangleMesh.Edge edge = meshEdge[edgeIndex];
         newLoopEdges.add(edgeIndex);
@@ -313,7 +314,7 @@ public class SeamFinder
   {
     MeshVertex meshVertex[] = mesh.getVertices();
     TriangleMesh.Edge meshEdge[] = mesh.getEdges();
-    ArrayList<Integer> terminals = new ArrayList<Integer>();
+    ArrayList<Integer> terminals = new ArrayList<>();
     for (int vertIndex = 0; vertIndex < vertexDistortion.length; vertIndex++)
     {
       if (vertexDistortion[vertIndex] < 0.2)
@@ -363,7 +364,7 @@ public class SeamFinder
 
     // Create an initial patch for each terminal vertex.
 
-    ArrayList<Patch> patches = new ArrayList<Patch>();
+    ArrayList<Patch> patches = new ArrayList<>();
     for (int vertIndex : terminalVertices)
     {
       Patch patch = new Patch();
@@ -513,8 +514,8 @@ public class SeamFinder
 
     Patch()
     {
-      vertices = new HashSet<Integer>();
-      candidates = new HashSet<Integer>();
+      vertices = new HashSet<>();
+      candidates = new HashSet<>();
       costToVertex = new double[mesh.getVertices().length];
     }
 

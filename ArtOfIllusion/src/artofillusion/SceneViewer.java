@@ -273,8 +273,8 @@ public class SceneViewer extends ViewerCanvas
 
     if (currentTool.hilightSelection())// && !animation.changingPerspective())
     {
-      ArrayList<Rectangle> selectedBoxes = new ArrayList<Rectangle>();
-      ArrayList<Rectangle> parentSelectedBoxes = new ArrayList<Rectangle>();
+      ArrayList<Rectangle> selectedBoxes = new ArrayList<>();
+      ArrayList<Rectangle> parentSelectedBoxes = new ArrayList<>();
       for (ObjectInfo obj: theScene.getObjects())
       {
         int hsize;

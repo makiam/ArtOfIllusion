@@ -44,7 +44,7 @@ public class CSGTool implements ModellingTool
   {
     Scene scene = window.getScene();
     int selection[] = window.getSelectedIndices(), closedCount = 0;
-    List<ObjectInfo> inputObj = new ArrayList<ObjectInfo>();
+    List<ObjectInfo> inputObj = new ArrayList<>();
 
     for (int i = 0; i < selection.length; i++)
       {
