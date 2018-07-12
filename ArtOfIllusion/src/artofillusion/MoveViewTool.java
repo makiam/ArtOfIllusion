@@ -1,6 +1,6 @@
 /* Copyright (C) 1999-2007 by Peter Eastman
    Changes copyright (C) 2016-2017 by Petri Ihalainen
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -230,16 +230,16 @@ public class MoveViewTool extends EditingTool
   }
 
   /** This is called recursively to move any children of a bound camera. */
+  // FIXME: All Move, Rotate, Scroll tools use the same code to move children. Maybe need to extract this method
   private void moveChildren(ObjectInfo parent, Mat4 transform, UndoRecord undo)
   {
-    for (int i = 0; i < parent.getChildren().length; i++)
-    {
-      CoordinateSystem coords = parent.getChildren()[i].getCoords();
-      CoordinateSystem oldCoords = coords.duplicate();
-      coords.transformCoordinates(transform);
-      undo.addCommand(UndoRecord.COPY_COORDS, new Object [] {coords, oldCoords});
-      moveChildren(parent.getChildren()[i], transform, undo);
-    }  
+    for (ObjectInfo item : parent.getChildren()) {
+        CoordinateSystem coords = item.getCoords();
+        CoordinateSystem oldCoords = coords.duplicate();
+        coords.transformCoordinates(transform);
+        undo.addCommand(UndoRecord.COPY_COORDS, new Object [] {coords, oldCoords});
+        moveChildren(item, transform, undo);
+    }
   }
 
   private void repaintAllViews(ViewerCanvas view)

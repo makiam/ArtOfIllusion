@@ -234,7 +234,7 @@ public class ScrollViewTool
             if (boundCamera.getObject() instanceof SceneCamera) ((SceneCamera)boundCamera.getObject()).setDistToPlane(distToPlane);
 
             UndoRecord undo = new UndoRecord(window, false, UndoRecord.COPY_COORDS, new Object [] {boundCamera.getCoords(), startCoords});
-            moveCameraChildren(boundCamera, boundCamera.getCoords().fromLocal().times(startCoords.toLocal()), undo);
+            moveChildren(boundCamera, boundCamera.getCoords().fromLocal().times(startCoords.toLocal()), undo);
             window.setUndoRecord(undo);
         }
 		wipeAuxGraphs();
@@ -265,17 +265,16 @@ public class ScrollViewTool
 	/** 
 	    This is called recursively to move any children of a bound camera. 
 	*/
-    private void moveCameraChildren(ObjectInfo parent, Mat4 transform, UndoRecord undo)
-	{	
-		for (int i = 0; i < parent.getChildren().length; i++)
-		{
-			CoordinateSystem coords = parent.getChildren()[i].getCoords();
+    private void moveChildren(ObjectInfo parent, Mat4 transform, UndoRecord undo)
+    {	        
+        for (ObjectInfo item : parent.getChildren()) {
+            CoordinateSystem coords = item.getCoords();
             CoordinateSystem previousCoords = coords.duplicate();
-			coords.transformCoordinates(transform);
+            coords.transformCoordinates(transform);
             undo.addCommand(UndoRecord.COPY_COORDS, new Object [] {coords, previousCoords});
-            moveCameraChildren(parent.getChildren()[i], transform, undo);
-		}  
-	}
+            moveChildren(item, transform, undo);
+        }  
+    }
 
   private void repaintAllViews(ViewerCanvas view)
   {
