@@ -224,8 +224,9 @@ public class Actor extends ObjectWrapper
     TextureParameter oldParam[] = getParameters();
     theObject.setTexture(tex, map);
     TextureParameter newParam[] = map.getParameters();
-    for (int i = 0; i < gesture.length; i++)
-      gesture[i].textureChanged(oldParam, newParam);
+    for (Gesture item : gesture) {
+        item.textureChanged(oldParam, newParam);
+    }
   }
 
   @Override
@@ -244,11 +245,12 @@ public class Actor extends ObjectWrapper
     theObject.setParameterValues(val);
 
     // Set them on every gesture.
-
     TextureParameter params[] = getParameters();
-    for (int i = 0; i < gesture.length; i++)
-      for (int j = 0; j < params.length; j++)
-        gesture[i].setTextureParameter(params[j], val[j].duplicate());
+    for (Gesture item : gesture) {
+        for (int j = 0; j < params.length; j++) {
+            item.setTextureParameter(params[j], val[j].duplicate());
+        }
+    }
   }
 
   /** Set the values of a texture parameter in every gesture. */
