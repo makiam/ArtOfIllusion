@@ -242,10 +242,13 @@ public class ObjectInfo
     
     // Update any texture tracks.
     
-    if (getTracks() != null)
-      for (int i = 0; i < getTracks().length; i++)
-        if (getTracks()[i] instanceof TextureTrack)
-          ((TextureTrack) getTracks()[i]).parametersChanged();
+    if(null == tracks) return;
+    
+    for (Track track : tracks) {
+      if (track instanceof TextureTrack) {
+          ((TextureTrack) track).parametersChanged();
+      }
+    }
   }
   
   /** Set the material and material mapping for this object. */
