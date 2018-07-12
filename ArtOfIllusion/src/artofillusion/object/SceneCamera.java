@@ -1,5 +1,6 @@
 /* Copyright (C) 1999-2009 by Peter Eastman
    Modifications Copyright 2016 by Petri Ihalainen
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -248,8 +249,9 @@ public class SceneCamera extends Object3D
 
   public void applyImageFilters(ComplexImage image, Scene scene, CoordinateSystem coords)
   {
-    for (int i = 0; i < filter.length; i++)
-      filter[i].filterImage(image, scene, this, coords);
+    for (ImageFilter currentFilter : filter) {
+        currentFilter.filterImage(image, scene, this, coords);
+    }
     image.rebuildImage();
   }
 
@@ -566,10 +568,9 @@ public class SceneCamera extends Object3D
     out.writeDouble(focalDist);
     out.writeBoolean(perspective);
     out.writeInt(filter.length);
-    for (int i = 0; i < filter.length; i++)
-    {
-      out.writeUTF(filter[i].getClass().getName());
-      filter[i].writeToStream(out, theScene);
+    for (ImageFilter item : filter) {
+        out.writeUTF(item.getClass().getName());
+        item.writeToStream(out, theScene);
     }
   }
 
