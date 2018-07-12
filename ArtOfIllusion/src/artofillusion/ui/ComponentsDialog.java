@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2011 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -130,8 +131,9 @@ public class ComponentsDialog extends BDialog
     if (!ok && cancelCallback != null)
       cancelCallback.run();
     dispose();
-    for (int i = 0; i < comp.length; i++)
-      comp[i].removeEventLink(KeyPressedEvent.class, this);
+    for (Widget widget : comp) {
+        widget.removeEventLink(KeyPressedEvent.class, this);
+    }
   }
     
   /** Pressing Return and Escape are equivalent to clicking OK and Cancel. */
