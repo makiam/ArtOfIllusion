@@ -1,4 +1,5 @@
 /* Copyright (C) 2004 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -77,11 +78,10 @@ public class CommentModule extends Module
   {
     String lines[] = name.split("\n");
     bounds.width = 0;
-    for (int i = 0; i < lines.length; i++)
-    {
-      int len = defaultMetrics.stringWidth(lines[i]);
-      if (len > bounds.width)
-        bounds.width = len;
+    for (String line : lines) {
+        int len = defaultMetrics.stringWidth(line);
+        if (len > bounds.width)
+            bounds.width = len;
     }
     bounds.width += IOPort.SIZE*4;
     bounds.height = lines.length*(defaultMetrics.getMaxAscent()+defaultMetrics.getMaxDescent())+IOPort.SIZE*4;
