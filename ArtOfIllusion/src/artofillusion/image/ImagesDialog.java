@@ -416,6 +416,7 @@ public class ImagesDialog extends BDialog
     /** The timer that keeps launcing animation 'frames' */
     private Timer timer = new Timer((int)(1f/61f*1000f), new ActionListener() 
     {
+      @Override
       public void actionPerformed(ActionEvent e) 
       {  
           BScrollBar bar = sp.getVerticalScrollBar();

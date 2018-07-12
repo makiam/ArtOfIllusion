@@ -1842,6 +1842,7 @@ public abstract class ViewerCanvas extends CustomWidget
 
 	protected Timer mouseMoveTimer = new Timer(500, new ActionListener() 
 	{
+                @Override
 		public void actionPerformed(ActionEvent e) 
 		{
 			mouseMoving = false;

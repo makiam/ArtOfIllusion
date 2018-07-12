@@ -1158,6 +1158,7 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
     itemTree.addElement(new ObjectTreeElement(info, itemTree));
     uiEventProcessor.addEvent(new Runnable()
     {
+      @Override
       public void run()
       {
         itemTree.setUpdateEnabled(true);
@@ -1180,6 +1181,7 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
     itemTree.addElement(new ObjectTreeElement(info, itemTree), index);
     uiEventProcessor.addEvent(new Runnable()
     {
+      @Override
       public void run()
       {
         itemTree.setUpdateEnabled(true);
@@ -1209,6 +1211,7 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
     theScene.removeObject(which, undo);
     uiEventProcessor.addEvent(new Runnable()
     {
+      @Override
       public void run()
       {
         itemTree.setUpdateEnabled(true);

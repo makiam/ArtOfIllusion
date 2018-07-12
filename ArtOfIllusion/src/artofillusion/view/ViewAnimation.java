@@ -1,4 +1,5 @@
 /* Copyright (C) 2016-2017 by Petri Ihalainen
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -85,6 +86,7 @@ public class ViewAnimation
 	/** The timer that keeps launcing animation 'frames' */
 	private Timer timer = new Timer(timerInterval, new ActionListener() 
 	{
+                @Override
 		public void actionPerformed(ActionEvent e) 
 		{	
 			if (step >= steps)
