@@ -1,4 +1,5 @@
 /* Copyright (C) 2001-2013 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -375,15 +376,11 @@ public class RotationTrack extends Track
 
   public void setUseQuaternion(boolean use)
   {
-    Keyframe val[] = tc.getValues();
-
     quaternion = use;
     tc.setSubdivideAdaptively(!quaternion);
-    for (int i = 0; i < val.length; i++)
-      {
-        RotationKeyframe v = (RotationKeyframe) val[i];
-        v.setUseQuaternion(use);
-      }
+    for (Keyframe item : tc.getValues()) {        
+        ((RotationKeyframe) item).setUseQuaternion(use);
+    }
   }
 
   /** Get the coordinate system of this track (WORLD, PARENT, OBJECT, or LOCAL). */

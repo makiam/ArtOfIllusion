@@ -1,4 +1,5 @@
 /* Copyright (C) 2002-2004 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -278,17 +279,21 @@ public class CustomDistortionTrack extends Track implements ProcedureOwner
     Module module[] = proc.getModules();
     int count = 0;
 
-    for (int i = 0; i < module.length; i++)
-      if (module[i] instanceof ParameterModule)
-        count++;
+    for (Module item : module) {
+        if (item instanceof ParameterModule) {
+            count++;
+        }
+    }
+    
     TextureParameter params[] = new TextureParameter [count];
     count = 0;
-    for (int i = 0; i < module.length; i++)
-      if (module[i] instanceof ParameterModule)
-        {
-          params[count] = ((ParameterModule) module[i]).getParameter(this);
-          ((ParameterModule) module[i]).setIndex(count++);
+    
+    for (Module item : module) {
+        if (item instanceof ParameterModule) {
+            params[count] = ((ParameterModule) item).getParameter(this);
+            ((ParameterModule) item).setIndex(count++);
         }
+    }
     return params;
   }
 
