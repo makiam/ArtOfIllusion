@@ -1,4 +1,5 @@
 /* Copyright (C) 2000-2011 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -221,10 +222,12 @@ public class Module
     g.setStroke(contourStroke);
     g.drawRoundRect(bounds.x-1, bounds.y-1, bounds.width+2, bounds.height+2, 4, 4);
     g.setStroke(currentStroke);
-    for (int i = 0; i < input.length; i++)
-      input[i].draw(g);
-    for (int i = 0; i < output.length; i++)
-      output[i].draw(g);
+    for (IOPort input1 : input) {
+        input1.draw(g);
+    }
+    for (IOPort output1 : output) {
+        output1.draw(g);
+    }
     drawContents(g);
   }
   
@@ -242,13 +245,14 @@ public class Module
   
   public boolean checkFeedback()
   {
-    if (checked)
-      return true;
+    if (checked) return true;
+    
     checked = true;
-    for (int i = 0; i < linkFrom.length; i++)
-      if (linkFrom[i] != null)
-        if (linkFrom[i].checkFeedback())
-          return true;
+    for (Module item : linkFrom) {
+        if (item != null && item.checkFeedback()) {
+            return true;
+        }
+    }
     checked = false;
     return false;
   }
