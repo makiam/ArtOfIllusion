@@ -1,4 +1,5 @@
 /* Copyright (C) 2000-2004 by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -42,11 +43,11 @@ public class LayeredTexture extends Texture
   @Override
   public boolean usesImage(ImageMap image)
   {
-    Texture tex[] = mapping.getLayers();
-
-    for (int i = 0; i < tex.length; i++)
-      if (tex[i].usesImage(image))
-        return true;
+      for (Texture texture : mapping.getLayers()) {
+          if (texture.usesImage(image)) {
+              return true;
+          }
+      }
     return false;
   }
 
@@ -108,9 +109,13 @@ public class LayeredTexture extends Texture
     }
     if (tex.length == 0)
       return false;
-    for (int i = 0; i < tex.length; i++)
-      if (tex[i].hasComponent(component))
-        return true;
+    
+    for (Texture texture : tex) {
+        if (texture.hasComponent(component)) {
+            return true;
+        }
+    }
+    
     return false;
   }
 
