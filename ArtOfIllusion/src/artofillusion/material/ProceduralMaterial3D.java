@@ -1,5 +1,5 @@
 /* Copyright (C) 2000-2008 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -147,11 +147,11 @@ public class ProceduralMaterial3D extends Material3D implements ProcedureOwner
   @Override
   public boolean usesImage(ImageMap image)
   {
-    Module modules[] = proc.getModules();
-
-    for (int i = 0; i < modules.length; i++)
-      if (modules[i] instanceof ImageModule && ((ImageModule) modules[i]).getMap() == image)
-        return true;
+    for (Module module : proc.getModules()) {
+        if (module instanceof ImageModule && ((ImageModule) module).getMap() == image) {
+            return true;
+        }
+    }
     return false;
   }
 
