@@ -1,6 +1,6 @@
 /* Copyright (C) 2003-2007 by Peter Eastman
    Changes Copyrignt (C) 2016 Petri Ihalainen
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -226,8 +226,7 @@ public class CreateVertexTool extends MeshEditingTool
     
     TriangleMesh.Vertex newvert[] = new TriangleMesh.Vertex [vert.length+1];
     int newface[][] = new int [face.length+2][];
-    for (int i = 0; i < vert.length; i++)
-      newvert[i] = vert[i];
+    System.arraycopy(vert, 0, newvert, 0, vert.length);
     newvert[vert.length] = mesh.new Vertex(v);
     for (int i = 0; i < face.length; i++)
       newface[i] = new int [] {face[i].v1, face[i].v2, face[i].v3};
