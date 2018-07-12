@@ -11,7 +11,6 @@
 package artofillusion.view;
 
 import artofillusion.math.*;
-import artofillusion.ui.*;
 import artofillusion.object.*;
 import artofillusion.*;
 import java.awt.*;

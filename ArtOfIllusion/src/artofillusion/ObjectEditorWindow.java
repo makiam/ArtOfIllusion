@@ -1,5 +1,6 @@
 /* Copyright (C) 1999-2009 by Peter Eastman
    Modifications copyright (C) 2017 Petri Ihalainen
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -21,7 +22,6 @@ import buoy.widget.*;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.prefs.*;
 
 /** The ObjectEditorWindow class represents a window for editing an object.  This is an

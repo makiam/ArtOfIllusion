@@ -13,7 +13,6 @@ package artofillusion.image;
 
 import artofillusion.*;
 import artofillusion.math.*;
-import buoy.widget.BStandardDialog;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;

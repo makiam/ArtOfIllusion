@@ -14,10 +14,8 @@ package artofillusion.view;
 import artofillusion.*;
 import artofillusion.ui.*;
 import artofillusion.math.*;
-import artofillusion.object.ObjectInfo;
 import javax.swing.Timer;
 import java.awt.event.*;
-import java.awt.*;
 
 /**
 	ViewAnimation is the animation engine, that is used to produce eg. smooth swithcing between 
