@@ -220,11 +220,11 @@ public class OBJExporter
               out.println("usemtl "+ti.name);
           }
         Mat4 trans = info.getCoords().fromLocal();
-        for (int j = 0; j < vert.length; j++)
-          {
-            Vec3 v = trans.times(vert[j].r);
-            out.println("v "+nf.format(v.x)+" "+nf.format(v.y)+" "+nf.format(v.z));
-          }
+        for (MeshVertex cVert : vert)
+        {
+            Vec3 v = trans.times(cVert.r);
+            out.println("v " + nf.format(v.x) + " " + nf.format(v.y) + " " + nf.format(v.z));
+        }
         if (needNormals)
           for (int j = 0; j < norm.length; j++)
             {

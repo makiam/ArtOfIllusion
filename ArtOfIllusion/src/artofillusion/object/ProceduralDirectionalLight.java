@@ -82,25 +82,28 @@ public class ProceduralDirectionalLight extends DirectionalLight
   {
     Module module[] = procedure.getModules();
     int count = 0;
-    for (int i = 0; i < module.length; i++)
-      if (module[i] instanceof ParameterModule)
-        count++;
+    for (Module module1 : module)
+    {
+        if (module1 instanceof ParameterModule) {
+            count++;
+        }
+    }
     TextureParameter newParameters[] = new TextureParameter[count];
     double newValues[] = new double[count];
     count = 0;
-    for (int i = 0; i < module.length; i++)
-      if (module[i] instanceof ParameterModule)
-        {
-          newParameters[count] = ((ParameterModule) module[i]).getParameter(this);
-          newValues[count] = newParameters[count].defaultVal;
-          if (parameters != null)
-          {
-            for (int j = 0; j < parameters.length; j++)
-              if (newParameters[count].equals(parameters[j]))
-                newValues[count] = parameterValues[j];
+      for (Module item : module)
+      {
+          if (item instanceof ParameterModule) {
+              newParameters[count] = ((ParameterModule) item).getParameter(this);
+              newValues[count] = newParameters[count].defaultVal;
+              if (parameters != null)
+              {
+                  for (int j = 0; j < parameters.length; j++)
+                      if (newParameters[count].equals(parameters[j]))
+                          newValues[count] = parameterValues[j];
+              }   ((ParameterModule) item).setIndex(count++);
           }
-          ((ParameterModule) module[i]).setIndex(count++);
-        }
+      }
     parameters = newParameters;
     parameterValues = newValues;
   }
