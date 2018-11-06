@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2013 by Peter Eastman
-   Changes copyright (C) 2016-2017 by Maksim Khramov
+   Changes copyright (C) 2016-2018 by Maksim Khramov
    Changes copyright (C) 2017 by Petri Ihalainen
 
    This program is free software; you can redistribute it and/or modify it under the
@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.zip.*;
 import java.beans.*;
+import java.util.stream.Stream;
 
 /** The Scene class describes a collection of objects, arranged relative to each other to
     form a scene, as well as the available textures and materials, environment options, etc. */
@@ -1013,6 +1014,12 @@ public class Scene
     return textures.size();
   }
 
+  
+  public Stream<Texture> getTextures()
+  {
+      return textures.stream();
+  }
+  
   /** Get the list of scene cameras. */
   
   public List<ObjectInfo> getCameras()

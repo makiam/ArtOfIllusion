@@ -1,5 +1,6 @@
 /* Copyright (C) 2017 by Petri Ihalainen
    Some methods copyright (C) by Peter Eastman
+   Changes copyright (C) 2018 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -12,6 +13,7 @@
 package artofillusion.image;
 
 import artofillusion.*;
+import artofillusion.texture.Texture;
 import artofillusion.ui.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -21,25 +23,28 @@ import javax.imageio.*;
 import java.io.*;
 import buoy.event.*;
 import buoy.widget.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.util.stream.Collectors;
+
 
 public class ImageDetailsDialog extends BDialog
 {
+    private static final Color hilightTextColor = new Color(0, 191, 191);
+    private static final Color errorTextColor = new Color(143, 0, 0);
+    private static final LayoutInfo layout = new LayoutInfo(LayoutInfo.WEST, LayoutInfo.NONE);
+    
     private BFrame parent;
-    private Scene scene;
+    private final Scene scene;
     private ImageMap im;
     private ArrayList<String> texturesUsing;
-    private ArrayList<Integer> indicesUsing;
+
     private ColumnContainer fields;
     private BLabel imageField; 
     private FormContainer infoTable; 
-    private RowContainer buttonField, dataField; 
+    private RowContainer buttonField; 
     private BufferedImage canvasImage;
-    private BButton okButton, cancelButton, refreshButton, reconnectButton, convertButton, exportButton;
+    private final BButton refreshButton, reconnectButton, convertButton, exportButton;
     private BLabel[] title, data; 
-    private Color defaultTextColor, errorTextColor, hilightTextColor, currentTextColor;
+    private Color defaultTextColor, currentTextColor;
 
     public ImageDetailsDialog(BFrame parent, Scene scene, ImageMap im)
     {
@@ -47,9 +52,7 @@ public class ImageDetailsDialog extends BDialog
         this.parent = parent;
         this.scene = scene;
         this.im = im;
-        LayoutInfo left = new LayoutInfo(LayoutInfo.WEST, LayoutInfo.NONE, new Insets(0, 0, 0, 10), null);
-        LayoutInfo top = new LayoutInfo(LayoutInfo.NORTH, LayoutInfo.NONE);
-        
+   
         createWhereUsedLists();    
         setContent(fields = new ColumnContainer());
         fields.add(imageField  = new BLabel());
@@ -57,25 +60,27 @@ public class ImageDetailsDialog extends BDialog
         fields.add(buttonField = new RowContainer());
         
         Font boldFont = new BLabel().getFont().deriveFont(Font.BOLD);
-
+        
         title = new BLabel[7];
         data  = new BLabel[7+texturesUsing.size()];
 
-        infoTable.add(title[0] = Translate.label("imageName",    ":"), 0, 0, left);
-        infoTable.add(title[1] = Translate.label("imageType",    ":"), 0, 1, left);
-        infoTable.add(title[2] = Translate.label("imageSize",    ":"), 0, 2, left);
-        infoTable.add(title[3] = Translate.label("imageLink",    ":"), 0, 3, left);
-        infoTable.add(title[4] = Translate.label("imageCreated", ":"), 0, 4, left);
-        infoTable.add(title[5] = Translate.label("imageEdited",  ":"), 0, 5, left);
-        infoTable.add(title[6] = Translate.label("imageUsedIn",  ":"), 0, 6, left);
+        infoTable.add(title[0] = Translate.label("imageName",    ":"), 0, 0, layout);
+        infoTable.add(title[1] = Translate.label("imageType",    ":"), 0, 1, layout);
+        infoTable.add(title[2] = Translate.label("imageSize",    ":"), 0, 2, layout);
+        infoTable.add(title[3] = Translate.label("imageLink",    ":"), 0, 3, layout);
+        infoTable.add(title[4] = Translate.label("imageCreated", ":"), 0, 4, layout);
+        infoTable.add(title[5] = Translate.label("imageEdited",  ":"), 0, 5, layout);
+        infoTable.add(title[6] = Translate.label("imageUsedIn",  ":"), 0, 6, layout);
+        
         for (int j = 0; j < 7; j++)
         {
-            infoTable.add(data[j]  = new BLabel(), 1, j, left);
+            infoTable.add(data[j]  = new BLabel(), 1, j, layout);
             title[j].setFont(boldFont);
-        }         
+        }
+        
         for (int q = 0; q < texturesUsing.size(); q++)
         {
-            infoTable.add(data[q+7] = new BLabel(texturesUsing.get(q)), 1, 6+q, left);
+            infoTable.add(data[q+7] = new BLabel(texturesUsing.get(q)), 1, 6+q, layout);
         }
 
         imageField.getComponent().setPreferredSize(new Dimension(600,600));
@@ -87,7 +92,7 @@ public class ImageDetailsDialog extends BDialog
         buttonField.add(reconnectButton = Translate.button("reconnectImage", "...", this, "reconnectImage")); 
         buttonField.add(convertButton = Translate.button("convertImage", this, "convertToLocal"));
         buttonField.add(exportButton = Translate.button("exportImage", "...", this, "exportImage"));
-        buttonField.add(okButton =  Translate.button("ok", this, "closeDetailsDialog"));
+        buttonField.add(Translate.button("ok", this, "closeDetailsDialog"));
         
         if (im instanceof ExternalImage)
             exportButton.setEnabled(false);
@@ -99,8 +104,7 @@ public class ImageDetailsDialog extends BDialog
         }
         
         defaultTextColor = currentTextColor = title[0].getComponent().getForeground();
-        hilightTextColor = new Color(0, 191, 191);
-        errorTextColor = new Color(143, 0, 0);
+
         
         data[0].addEventLink(MouseClickedEvent.class, this, "nameClicked");
         data[0].addEventLink(MouseEnteredEvent.class, this, "nameEntered");
@@ -124,7 +128,7 @@ public class ImageDetailsDialog extends BDialog
         
         for (int d = 0; d < 7; d++)
         {
-            data[d].setText(new String());
+            data[d].setText("");
             if (im instanceof ExternalImage && !((ExternalImage)im).isConnected())
                 currentTextColor = errorTextColor;
             else
@@ -166,14 +170,17 @@ public class ImageDetailsDialog extends BDialog
 
     private void createWhereUsedLists()
     {
+
+        String used = scene.getTextures().filter((Texture t) -> t.usesImage(im)).map((Texture t) -> t.getName()).collect(Collectors.joining(", "));
+        
         texturesUsing = new ArrayList();
-        indicesUsing = new ArrayList();
+
         for (int t = 0; t < scene.getNumTextures(); t++)
         {
             if (scene.getTexture(t).usesImage(im))
             {
                 texturesUsing.add(scene.getTexture(t).getName());
-                indicesUsing.add(t);
+
             }
         }
     }
@@ -277,29 +284,19 @@ public class ImageDetailsDialog extends BDialog
         }
         
         // Write the file
-        
-        try
+        try(BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(imageFile)))
         {
             if(im instanceof HDRImage)
             {                
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(imageFile));
                 HDREncoder.writeImage((HDRImage)im, out);
-                out.close();
-                return;
             }
             else if(im instanceof SVGImage)
             {
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(imageFile));
                 out.write(((SVGImage)im).getXML());
-                out.close();
-                return;
             }
             else // MIPMappedImage
             {
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(imageFile));
                 ImageIO.write(((MIPMappedImage)im).getImage(), "png", out); // getImage returns BufferedImage
-                out.close();
-                return;
             }
         }
         catch (Exception ex)
@@ -307,7 +304,6 @@ public class ImageDetailsDialog extends BDialog
             setCursor(Cursor.getDefaultCursor());
             new BStandardDialog("", Translate.text("errorExportingImage_HEAD") + " " + im.getName() + " " + Translate.text("errorExportingImage_TAIL"), BStandardDialog.ERROR).showMessageDialog(this);
             ex.printStackTrace();
-            return;
         }
     }
 
@@ -403,19 +399,24 @@ public class ImageDetailsDialog extends BDialog
         data[0].getComponent().setForeground(currentTextColor);
     }
     
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     private void nameClicked()
     {
         new ImageNameEditor(im, this);
     }
-    
+
+    private class ImageLabel extends JLabel
+    {
+        
+    }    
     /** Dialog for setting the name of the image */
-    
+
     private class ImageNameEditor extends BDialog
     {
         private ColumnContainer content;
         private BTextField nameField;
         private BCheckBox autoBox;
-        private BButton okButton, cancelButton;
+
         private String autoText, userText;
         private boolean automatic = false;
         
@@ -447,8 +448,8 @@ public class ImageDetailsDialog extends BDialog
             nameField.setColumns(50);
             nameField.addEventLink(ValueChangedEvent.class, this, "textChanged");
             content.add(buttons);
-            buttons.add(okButton = Translate.button("ok", this, "okNameEditor"));
-            buttons.add(cancelButton = Translate.button("cancel", this, "cancelNameEditor"));
+            buttons.add(Translate.button("ok", this, "okNameEditor"));
+            buttons.add(Translate.button("cancel", this, "cancelNameEditor"));
             addEventLink(WindowClosingEvent.class, this, "cancelNameEditor");
             addAsListener(this);
             layoutChildren();            
@@ -465,8 +466,8 @@ public class ImageDetailsDialog extends BDialog
 
         private void textChanged()
         {
-            if (!automatic)
-                userText = nameField.getText();
+            if(automatic) return;
+            userText = nameField.getText();
         }
         
         private void autoChanged()
