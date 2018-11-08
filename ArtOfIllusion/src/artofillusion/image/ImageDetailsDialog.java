@@ -17,7 +17,8 @@ import artofillusion.texture.Texture;
 import artofillusion.ui.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.util.*;
+import java.util.List;
+import java.util.Iterator;
 import javax.swing.*;
 import javax.imageio.*;
 import java.io.*;
@@ -35,10 +36,9 @@ public class ImageDetailsDialog extends BDialog
     private BFrame parent;
     private final Scene scene;
     private ImageMap im;
-    private ArrayList<String> texturesUsing;
 
     private ColumnContainer fields;
-    private BLabel imageField; 
+    private final BLabel imageField; 
     private FormContainer infoTable; 
     private RowContainer buttonField; 
     private BufferedImage canvasImage;
@@ -53,16 +53,20 @@ public class ImageDetailsDialog extends BDialog
         this.scene = scene;
         this.im = im;
    
-        createWhereUsedLists();    
+        List<String> usedTextureNames = scene.getTextures().
+                filter((Texture t) -> t.usesImage(im)).
+                map((Texture t) -> t.getName()).
+                collect(Collectors.toList());
+          
         setContent(fields = new ColumnContainer());
         fields.add(imageField  = new BLabel());
-        fields.add(infoTable   = new FormContainer(2, 7+texturesUsing.size()));
+        fields.add(infoTable = new FormContainer(2, 7 + usedTextureNames.size()));
         fields.add(buttonField = new RowContainer());
         
         Font boldFont = new BLabel().getFont().deriveFont(Font.BOLD);
         
         title = new BLabel[7];
-        data  = new BLabel[7+texturesUsing.size()];
+        data = new BLabel[7 + usedTextureNames.size()];
 
         infoTable.add(title[0] = Translate.label("imageName",    ":"), 0, 0, layout);
         infoTable.add(title[1] = Translate.label("imageType",    ":"), 0, 1, layout);
@@ -78,9 +82,9 @@ public class ImageDetailsDialog extends BDialog
             title[j].setFont(boldFont);
         }
         
-        for (int q = 0; q < texturesUsing.size(); q++)
+        for (int q = 0; q < usedTextureNames.size(); q++)
         {
-            infoTable.add(data[q+7] = new BLabel(texturesUsing.get(q)), 1, 6+q, layout);
+            infoTable.add(data[q+7] = new BLabel(usedTextureNames.get(q)), 1, 6+q, layout);
         }
 
         imageField.getComponent().setPreferredSize(new Dimension(600,600));
@@ -149,40 +153,21 @@ public class ImageDetailsDialog extends BDialog
 
     private void createBackground()
     {
-        int midShade = 127+32+32+16;
-        int difference = 12;
-        Color bgColor1 = new Color(midShade-difference,midShade-difference,midShade-difference);
-        Color bgColor2 = new Color(midShade+difference,midShade+difference,midShade+difference);
-        int rgb1 = bgColor1.getRGB();
-        int rgb2 = bgColor2.getRGB();
+        int tone = 185;
+        Color bgColorDark = new Color(tone, tone, tone);
+        tone = 219;
+        Color bgColorLight = new Color(tone, tone, tone);
         
         canvasImage = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-
-        for (int x = 0; x < 600; x++)
-            for (int y = 0; y < 600; y++)
+        Graphics2D graphics = canvasImage.createGraphics();
+        graphics.setBackground(bgColorDark);
+        graphics.clearRect(0, 0, 600, 600);
+        graphics.setColor(bgColorLight);
+        for(int x = 0; x < 61; x++)
+            for(int y = 0; y < 60; y++)
             {
-                if ((x%20 < 10 && y%20 < 10) || (x%20 >= 10 && y%20 >= 10)) // checkers
-                    canvasImage.setRGB(x, y, rgb1);
-                else
-                    canvasImage.setRGB(x, y, rgb2);
+                if((x%2) != (y%2)) graphics.fillRect(x*10, y*10, 10, 10);
             }
-    }
-
-    private void createWhereUsedLists()
-    {
-
-        String used = scene.getTextures().filter((Texture t) -> t.usesImage(im)).map((Texture t) -> t.getName()).collect(Collectors.joining(", "));
-        
-        texturesUsing = new ArrayList();
-
-        for (int t = 0; t < scene.getNumTextures(); t++)
-        {
-            if (scene.getTexture(t).usesImage(im))
-            {
-                texturesUsing.add(scene.getTexture(t).getName());
-
-            }
-        }
     }
     
     private void paintImage()
@@ -302,7 +287,7 @@ public class ImageDetailsDialog extends BDialog
         catch (Exception ex)
         {
             setCursor(Cursor.getDefaultCursor());
-            new BStandardDialog("", Translate.text("errorExportingImage_HEAD") + " " + im.getName() + " " + Translate.text("errorExportingImage_TAIL"), BStandardDialog.ERROR).showMessageDialog(this);
+            new BStandardDialog("", Translate.text("errorExportingImage", im.getName()), BStandardDialog.ERROR).showMessageDialog(this);
             ex.printStackTrace();
         }
     }
@@ -335,10 +320,8 @@ public class ImageDetailsDialog extends BDialog
     
     private boolean confirmConvert(String name)
     {
-      String title    = Translate.text("confirmTitle");
-      String question = (Translate.text("convertQuestionHEAD") + 
-                         " '"+ name + "' " + 
-                         Translate.text("convertQuestionTAIL"));
+      String title = Translate.text("confirmTitle");
+      String question = Translate.text("convertQuestion", name);
 
       BStandardDialog confirm = new BStandardDialog(title, question, BStandardDialog.QUESTION);
       String[] options = new String[]{Translate.text("Yes"), Translate.text("No")};
