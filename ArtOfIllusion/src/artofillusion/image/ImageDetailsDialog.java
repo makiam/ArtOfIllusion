@@ -18,7 +18,6 @@ import artofillusion.ui.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.List;
-import java.util.Iterator;
 import javax.swing.*;
 import javax.imageio.*;
 import java.io.*;
@@ -33,18 +32,19 @@ public class ImageDetailsDialog extends BDialog
     private static final Color errorTextColor = new Color(143, 0, 0);
     private static final LayoutInfo layout = new LayoutInfo(LayoutInfo.WEST, LayoutInfo.NONE);
     
-    private BFrame parent;
+    private final BFrame parent;
     private final Scene scene;
     private ImageMap im;
 
-    private ColumnContainer fields;
+    
     private final BLabel imageField; 
-    private FormContainer infoTable; 
-    private RowContainer buttonField; 
+    
+     
     private BufferedImage canvasImage;
     private final BButton refreshButton, reconnectButton, convertButton, exportButton;
     private BLabel[] title, data; 
-    private Color defaultTextColor, currentTextColor;
+    private final Color defaultTextColor;
+    private Color currentTextColor;
 
     public ImageDetailsDialog(BFrame parent, Scene scene, ImageMap im)
     {
@@ -57,11 +57,14 @@ public class ImageDetailsDialog extends BDialog
                 filter((Texture t) -> t.usesImage(im)).
                 map((Texture t) -> t.getName()).
                 collect(Collectors.toList());
-          
-        setContent(fields = new ColumnContainer());
+        
+        ColumnContainer fields = new ColumnContainer();
+        setContent(fields);
         fields.add(imageField  = new BLabel());
+        FormContainer infoTable; 
         fields.add(infoTable = new FormContainer(2, 7 + usedTextureNames.size()));
-        fields.add(buttonField = new RowContainer());
+        RowContainer buttonField = new RowContainer();
+        fields.add(buttonField);
         
         Font boldFont = new BLabel().getFont().deriveFont(Font.BOLD);
         
@@ -107,7 +110,7 @@ public class ImageDetailsDialog extends BDialog
             convertButton.setEnabled(false);
         }
         
-        defaultTextColor = currentTextColor = title[0].getComponent().getForeground();
+        defaultTextColor = currentTextColor = UIManager.getColor("Label.foreground");
 
         
         data[0].addEventLink(MouseClickedEvent.class, this, "nameClicked");
@@ -117,7 +120,7 @@ public class ImageDetailsDialog extends BDialog
         title[0].addEventLink(MouseEnteredEvent.class, this, "nameEntered");
         title[0].addEventLink(MouseExitedEvent.class,  this, "nameExited");
         
-        addAsListener(this);
+        addAsListener();
         addEventLink(WindowClosingEvent.class, this, "closeDetailsDialog");
         setDataTexts();
         pack();
@@ -174,6 +177,7 @@ public class ImageDetailsDialog extends BDialog
     {
         try
         {
+            
             Graphics2D g = (Graphics2D)canvasImage.createGraphics();
             Image image = im.getPreview(600);
             if (image == null)
@@ -191,15 +195,13 @@ public class ImageDetailsDialog extends BDialog
 
     private void refreshImage()
     {
-        if (! refreshButton.isEnabled())
-            return;
-            
-        ((ExternalImage)im).refreshImage();
-        createBackground();
-        paintImage();
-        setDataTexts();
-        // The path to the referenced image does not change, so the parent is not set modefied
-        // whether referesh fails or not.
+        if(refreshButton.isEnabled())
+        {
+            ((ExternalImage)im).refreshImage();
+            createBackground();
+            paintImage();
+            setDataTexts();   
+        }
     }
 
     private void reconnectImage()
@@ -292,6 +294,7 @@ public class ImageDetailsDialog extends BDialog
         }
     }
 
+    @SuppressWarnings("empty-statement")
     private void convertToLocal()
     {
         if (! convertButton.isEnabled())
@@ -320,10 +323,10 @@ public class ImageDetailsDialog extends BDialog
     
     private boolean confirmConvert(String name)
     {
-      String title = Translate.text("confirmTitle");
+      String convertTitle = Translate.text("confirmTitle");
       String question = Translate.text("convertQuestion", name);
 
-      BStandardDialog confirm = new BStandardDialog(title, question, BStandardDialog.QUESTION);
+      BStandardDialog confirm = new BStandardDialog(convertTitle, question, BStandardDialog.QUESTION);
       String[] options = new String[]{Translate.text("Yes"), Translate.text("No")};
       return (confirm.showOptionDialog(this, options, options[1]) == 0);
     }
@@ -331,7 +334,7 @@ public class ImageDetailsDialog extends BDialog
     private void closeDetailsDialog()
     {
       dispose();
-      removeAsListener(this);
+      removeAsListener();
     }
 
     
@@ -344,30 +347,22 @@ public class ImageDetailsDialog extends BDialog
             closeDetailsDialog();
     }
   
-    /** Add this as a listener to every Widget. */
+    /** Add keyboard event listener to every Widget. */
     
-    private void addAsListener(Widget w)
-    {
-        w.addEventLink(KeyPressedEvent.class, this, "keyPressed");
-        if (w instanceof WidgetContainer)
-        {
-            Iterator iter = ((WidgetContainer) w).getChildren().iterator();
-            while (iter.hasNext())
-                addAsListener((Widget) iter.next());
-        }
+    private void addAsListener()
+    {        
+        addEventLink(KeyPressedEvent.class, this, "keyPressed");
+        for (Widget cw : UIUtilities.findAllChildren(this))
+            cw.addEventLink(KeyPressedEvent.class, this, "keyPressed");
     }
     
-    /** Remove this as a listener before returning. */
+    /** Remove keyboard listener before returning. */
     
-    private void removeAsListener(Widget w)
+    private void removeAsListener()
     {
-        w.removeEventLink(KeyPressedEvent.class, this);
-        if (w instanceof WidgetContainer)
-        {
-            Iterator iter = ((WidgetContainer) w).getChildren().iterator();
-            while (iter.hasNext())
-                removeAsListener((Widget) iter.next());
-        }
+        removeEventLink(KeyPressedEvent.class, this);
+        for (Widget cw : UIUtilities.findAllChildren(this))
+            cw.removeEventLink(KeyPressedEvent.class, this);
     }
     
     private void nameEntered()
@@ -391,7 +386,7 @@ public class ImageDetailsDialog extends BDialog
     private class ImageLabel extends JLabel
     {
         
-    }    
+    }
     /** Dialog for setting the name of the image */
 
     private class ImageNameEditor extends BDialog
@@ -432,9 +427,9 @@ public class ImageDetailsDialog extends BDialog
             nameField.addEventLink(ValueChangedEvent.class, this, "textChanged");
             content.add(buttons);
             buttons.add(Translate.button("ok", this, "okNameEditor"));
-            buttons.add(Translate.button("cancel", this, "cancelNameEditor"));
-            addEventLink(WindowClosingEvent.class, this, "cancelNameEditor");
-            addAsListener(this);
+            buttons.add(Translate.button("cancel", this, "dispose"));
+            addEventLink(WindowClosingEvent.class, this, "dispose");
+            addAsListener();
             layoutChildren();            
             pack();
             setResizable(false);
@@ -466,7 +461,7 @@ public class ImageDetailsDialog extends BDialog
         private void cancelNameEditor()
         {
             dispose();
-            removeAsListener(this);
+            removeAsListener();
         }
         
         private void okNameEditor()
@@ -480,9 +475,9 @@ public class ImageDetailsDialog extends BDialog
             im.setDataEdited();
             setDataTexts();
             dispose();
-            removeAsListener(this);
+            removeAsListener();
         }
-
+        
         /** Pressing Return and Escape are equivalent to clicking OK and Cancel. */
         
         private void keyPressed(KeyPressedEvent ev)
@@ -494,30 +489,22 @@ public class ImageDetailsDialog extends BDialog
                 okNameEditor();
         }
     
-        /** Add this as a listener to every Widget. */
-        
-        private void addAsListener(Widget w)
-        {
-            w.addEventLink(KeyPressedEvent.class, this, "keyPressed");
-            if (w instanceof WidgetContainer)
-            {
-                Iterator iter = ((WidgetContainer) w).getChildren().iterator();
-                while (iter.hasNext())
-                    addAsListener((Widget) iter.next());
-            }
+        /** Add keyboard event listener to every Widget. */
+
+        private void addAsListener()
+        {        
+            addEventLink(KeyPressedEvent.class, this, "keyPressed");
+            for (Widget cw : UIUtilities.findAllChildren(this))
+                cw.addEventLink(KeyPressedEvent.class, this, "keyPressed");
         }
         
-        /** Remove this as a listener before returning. */
-        
-        private void removeAsListener(Widget w)
+        /** Remove keyboard listener before returning. */
+
+        private void removeAsListener()
         {
-            w.removeEventLink(KeyPressedEvent.class, this);
-            if (w instanceof WidgetContainer)
-            {
-                Iterator iter = ((WidgetContainer) w).getChildren().iterator();
-                while (iter.hasNext())
-                    removeAsListener((Widget) iter.next());
-            }
+            removeEventLink(KeyPressedEvent.class, this);
+            for (Widget cw : UIUtilities.findAllChildren(this))
+                cw.removeEventLink(KeyPressedEvent.class, this);
         }
     }
 }
