@@ -60,7 +60,14 @@ public class ImageDetailsDialog extends BDialog
         
         ColumnContainer fields = new ColumnContainer();
         setContent(fields);
-        fields.add(imageField  = new BLabel());
+        
+        fields.add(imageField  = new BLabel() {
+            @Override
+            protected JLabel createComponent(String text, Icon image) {
+                return new ImageLabel();
+            }
+            
+        });
         FormContainer infoTable; 
         fields.add(infoTable = new FormContainer(2, 7 + usedTextureNames.size()));
         RowContainer buttonField = new RowContainer();
@@ -90,8 +97,6 @@ public class ImageDetailsDialog extends BDialog
             infoTable.add(data[q+7] = new BLabel(usedTextureNames.get(q)), 1, 6+q, layout);
         }
 
-        imageField.getComponent().setPreferredSize(new Dimension(600,600));
-        createBackground();
         paintImage();
         
         
@@ -154,23 +159,26 @@ public class ImageDetailsDialog extends BDialog
             data[5].setText(im.getUserEdited() + " - " + im.getDateEdited() + " - " + im.getZoneEdited());
     }
 
-    private void createBackground()
+    private static BufferedImage createBackground()
     {
         int tone = 185;
         Color bgColorDark = new Color(tone, tone, tone);
         tone = 219;
         Color bgColorLight = new Color(tone, tone, tone);
-        
-        canvasImage = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = canvasImage.createGraphics();
+
+        BufferedImage ci = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = ci.createGraphics();
         graphics.setBackground(bgColorDark);
         graphics.clearRect(0, 0, 600, 600);
         graphics.setColor(bgColorLight);
-        for(int x = 0; x < 61; x++)
-            for(int y = 0; y < 60; y++)
-            {
-                if((x%2) != (y%2)) graphics.fillRect(x*10, y*10, 10, 10);
+        for (int x = 0; x < 61; x++) {
+            for (int y = 0; y < 60; y++) {
+                if ((x % 2) != (y % 2)) {
+                    graphics.fillRect(x * 10, y * 10, 10, 10);
+                }
             }
+        }
+        return ci;
     }
     
     private void paintImage()
@@ -198,7 +206,7 @@ public class ImageDetailsDialog extends BDialog
         if(refreshButton.isEnabled())
         {
             ((ExternalImage)im).refreshImage();
-            createBackground();
+
             paintImage();
             setDataTexts();   
         }
@@ -221,7 +229,7 @@ public class ImageDetailsDialog extends BDialog
             if (parent instanceof EditingWindow)
                 sc = ((EditingWindow)parent).getScene();
             ((ExternalImage)im).reconnectImage(file, sc);
-            createBackground();
+            
             paintImage();
             setDataTexts();            
             if (parent instanceof EditingWindow)
@@ -385,7 +393,21 @@ public class ImageDetailsDialog extends BDialog
 
     private class ImageLabel extends JLabel
     {
+        private final BufferedImage canvasImage = ImageDetailsDialog.createBackground();
+        private final Dimension pf = new Dimension(600, 600);
         
+        @Override
+        public Dimension getPreferredSize() {
+            return pf;
+        }
+
+        @Override
+        protected void paintComponent(Graphics graph) {
+            graph.drawImage(canvasImage, 0, 0, null);
+            ImageIcon icon = (ImageIcon)getIcon();
+            if(null == icon) return;
+            graph.drawImage(icon.getImage(), 0, 0, null);
+        }
     }
     /** Dialog for setting the name of the image */
 
