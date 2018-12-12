@@ -11,12 +11,11 @@
 
 package artofillusion.ui;
 
+import artofillusion.*;
 import buoy.event.*;
 import buoy.widget.*;
 import java.text.*;
 import java.util.*;
-
-import artofillusion.*;
 
 /**
  * This class provides utilities for localizing text so that it can be translated into
@@ -313,7 +312,7 @@ public class Translate
   }
 
   /** Get the text given by the property "name".  If the property is not
-      found, this simply uses name.  Any occurrance of the pattern "{0}"
+      found, this simply uses name.  Any occurrence of the pattern "{0}"
       in the text string will be replaced with the string representation
       of arg1. */
 
@@ -331,7 +330,7 @@ public class Translate
   }
 
   /** Get the text given by the property "name".  If the property is not
-      found, this simply uses name.  Any occurrances of the patterns
+      found, this simply uses name.  Any occurrences of the patterns
       "{0}" and "{1}" in the text string will be replaced with the 
       strings representations of arg1 and arg2, respectively. */
 
@@ -353,7 +352,7 @@ public class Translate
       then passed to MessageFormat.format() so that any variable fields
       can be replaced with the correct values. */
 
-  public static String text(String name, Object args[])
+  public static String text(String name, Object... args)
   {
     String pattern = name;
     try
