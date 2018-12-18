@@ -13,21 +13,19 @@
 package artofillusion;
 
 import artofillusion.image.*;
+import artofillusion.keystroke.*;
 import artofillusion.material.*;
 import artofillusion.math.*;
 import artofillusion.object.*;
 import artofillusion.script.*;
 import artofillusion.texture.*;
 import artofillusion.ui.*;
-import artofillusion.keystroke.*;
 import artofillusion.view.*;
 import buoy.widget.*;
-
 import java.io.*;
-import java.util.*;
-import java.util.List;
 import java.lang.reflect.*;
 import java.nio.file.Paths;
+import java.util.*;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -46,10 +44,12 @@ public class ArtOfIllusion
   private static Texture clipboardTexture[];
   private static Material clipboardMaterial[];
   private static ImageMap clipboardImage[];
-  private static LinkedList<EditingWindow> windows = new LinkedList<EditingWindow>();
+  private static final LinkedList<EditingWindow> windows = new LinkedList<EditingWindow>();
   private static final Map<String, String> classTranslations = new HashMap<String, String>();
   private static int numNewWindows = 0;
 
+  private static String currentDirectory;
+  
   static
   {
 
@@ -306,6 +306,7 @@ public class ArtOfIllusion
             return;
         }        
       } while(!windows.isEmpty());
+      System.exit(0);
   }
 
   /** Execute all startup scripts. */
@@ -373,12 +374,12 @@ public class ArtOfIllusion
     catch (ClassNotFoundException ex)
     {
     }
-    List pluginLoaders = PluginRegistry.getPluginClassLoaders();
+    List<ClassLoader> pluginLoaders = PluginRegistry.getPluginClassLoaders();
     for (int i = 0; i < pluginLoaders.size(); i++)
     {
       try
       {
-        return ((ClassLoader) pluginLoaders.get(i)).loadClass(name);
+        return pluginLoaders.get(i).loadClass(name);
       }
       catch (ClassNotFoundException ex)
       {
@@ -653,23 +654,21 @@ public class ArtOfIllusion
 
   public static int getClipboardSize()
   {
-    if (clipboardObject == null)
-      return 0;
-    return clipboardObject.length;
+    return (null == clipboardObject) ? 0 : clipboardObject.length;
   }
 
   /** Get the directory in which the user most recently accessed a file. */
 
   public static String getCurrentDirectory()
   {
-    return ModellingApp.currentDirectory;
-  }
+    return currentDirectory;
+}
 
   /** Set the directory in which the user most recently accessed a file. */
 
   public static void setCurrentDirectory(String currentDirectory)
   {
-    ModellingApp.currentDirectory = currentDirectory;
+    ArtOfIllusion.currentDirectory = currentDirectory;
   }
 
 }
