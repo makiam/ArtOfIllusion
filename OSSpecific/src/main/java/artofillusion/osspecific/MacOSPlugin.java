@@ -49,7 +49,7 @@ public class MacOSPlugin extends PluginBase {
     @Override
     @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public void onApplicationStarting(Object... args) {
-        if (System.getProperties().get("os.name").toString().toLowerCase().startsWith("mac os x")) {
+        if(!System.getProperties().get("os.name").toString().toLowerCase().startsWith("mac os x")) {
             return;
         }
         ArtOfIllusion.addWindow(new MacMenuBarWindow());

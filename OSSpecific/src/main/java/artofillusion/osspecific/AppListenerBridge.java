@@ -20,7 +20,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.Window;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -101,6 +100,7 @@ public class AppListenerBridge implements com.apple.eawt.ApplicationListener {
     @Override
     public void handleQuit(ApplicationEvent event) {
         event.setHandled(false);
+        System.exit(0);
     }
 
     @Override
