@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2013 by Peter Eastman
    Changes Copyright (C) 2016 by Petri Ihalainen
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2019 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -12,23 +12,20 @@
 
 package artofillusion.keystroke;
 
-import artofillusion.ui.*;
-import artofillusion.script.*;
 import artofillusion.*;
-
-import java.util.*;
+import artofillusion.script.*;
+import artofillusion.ui.*;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-
-import org.w3c.dom.*;
-import org.w3c.dom.Node;
+import java.util.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class maintains the list of keystrokes, and executes them in response to KeyEvents.
@@ -36,55 +33,65 @@ import org.w3c.dom.Node;
 
 public class KeystrokeManager
 {
-  private static ArrayList<KeystrokeRecord> records = new ArrayList<KeystrokeRecord>();
-  private static HashMap<Integer, ArrayList<KeystrokeRecord>> keyIndex = new HashMap<Integer, ArrayList<KeystrokeRecord>>();
+  private static Unmarshaller um = null;
+  private static Marshaller ms = null;
+  
+  static {
+    try
+    {
+      JAXBContext context = javax.xml.bind.JAXBContext.newInstance(KeystrokeRecords.class);
+      um = context.createUnmarshaller();
+      ms = context.createMarshaller();
+    } catch (JAXBException ex)
+    {
+      System.out.println("Error creating XML marshaller/unmarshaller: " + ex);
+    }
+
+  }
+  
+  private static final KeystrokeRecords keystrokes = new KeystrokeRecords();
+  private static Map<Integer, List<KeystrokeRecord>> keyIndex = new HashMap<Integer, List<KeystrokeRecord>>();
 
   private static final String KEYSTROKE_FILENAME = "keystrokes.xml";
 
   /**
-   * Get a list of all defined KeystrokeRecords.
+   * Get an array of all defined KeystrokeRecords.
    */
-
   public static KeystrokeRecord[] getAllRecords()
   {
-    return records.toArray(new KeystrokeRecord [records.size()]);
+    return keystrokes.items.toArray(new KeystrokeRecord [keystrokes.items.size()]);    
   }
 
   /**
    * Set the list of all defined KeystrokeRecords, completely replacing the existing ones.
    */
-
   public static void setAllRecords(KeystrokeRecord allRecords[])
   {
-    records.clear();
-    Collections.addAll(records, allRecords);
+    keystrokes.addAll(allRecords);
     recordModified();
   }
 
   /**
    * Add a new KeystrokeRecord.
    */
-
   public static void addRecord(KeystrokeRecord record)
   {
-    records.add(record);
+    keystrokes.items.add(record);
     recordModified();
   }
 
   /**
    * Remove a KeystrokeRecord.
    */
-
   public static void removeRecord(KeystrokeRecord record)
   {
-    records.remove(record);
+    keystrokes.items.remove(record);
     recordModified();
   }
 
   /**
    * This should be called whenever a KeystrokeRecord has been modified.
    */
-
   public static void recordModified()
   {
     keyIndex = null;
@@ -103,10 +110,10 @@ public class KeystrokeManager
     {
       // We need to build an index for quickly looking up KeystrokeRecords.
 
-      keyIndex = new HashMap<Integer, ArrayList<KeystrokeRecord>>(records.size());
-      for (KeystrokeRecord record : records)
+      keyIndex = new HashMap<Integer, List<KeystrokeRecord>>(keystrokes.items.size());
+      for (KeystrokeRecord record : keystrokes.items)
       {
-        ArrayList<KeystrokeRecord> list = keyIndex.get(record.getKeyCode());
+        List<KeystrokeRecord> list = keyIndex.get(record.getKeyCode());
         if (list == null)
         {
           list = new ArrayList<KeystrokeRecord>(1);
@@ -118,17 +125,17 @@ public class KeystrokeManager
 
     // Get the list of all records with the correct ID.
 
-    ArrayList<KeystrokeRecord> list = keyIndex.get(event.getKeyCode());
+    List<KeystrokeRecord> list = keyIndex.get(event.getKeyCode());
     if (list == null)
       return;
+    
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("window", window);
     for (KeystrokeRecord record : list)
     {
       if (record.getModifiers() == event.getModifiers())
       {
         // Execute it.
-
-        HashMap<String, Object> variables = new HashMap<String, Object>();
-        variables.put("window", window);
         ScriptRunner.executeScript(record.getLanguage(), record.getScript(), variables);
         event.consume();
       }
@@ -138,7 +145,6 @@ public class KeystrokeManager
   /**
    * Locate the file containing keystroke definitions and load them.
    */
-
   public static void loadRecords()
   {
     try
@@ -165,72 +171,38 @@ public class KeystrokeManager
    * it checks whether there was already an existing keystroke with the same name.  If so, the
    * new keystroke replaces the old one.  If not, the new keystroke is simply added.
    */
-
   public static void addRecordsFromXML(InputStream in) throws Exception
   {
     // Build a table of existing records.
 
     HashMap<String, KeystrokeRecord> existing = new HashMap<String, KeystrokeRecord>();
-    for (KeystrokeRecord record : records)
-      existing.put(record.getName(), record);
+    keystrokes.items.forEach((record) -> { existing.put(record.getName(), record); });
 
     // Parse the XML and load the records.
-
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document doc = builder.parse(in);
-    NodeList keystrokes = doc.getElementsByTagName("keystroke");
-    for (int i = 0; i < keystrokes.getLength(); i++)
+    KeystrokeRecords kr = (KeystrokeRecords)um.unmarshal(in);    
+    for(KeystrokeRecord record: kr.items)
     {
-      Node keystroke = keystrokes.item(i);
-      String name = keystroke.getAttributes().getNamedItem("name").getNodeValue();
-      String language = (keystroke.getAttributes().getNamedItem("language") == null ? "BeanShell" : keystroke.getAttributes().getNamedItem("language").getNodeValue());
-      int code = Integer.parseInt(keystroke.getAttributes().getNamedItem("code").getNodeValue());
-      int modifiers = Integer.parseInt(keystroke.getAttributes().getNamedItem("modifiers").getNodeValue());
-      String script = keystroke.getFirstChild().getNodeValue();
-      if (existing.containsKey(name))
-        records.remove(existing.get(name));
-      addRecord(new KeystrokeRecord(code, modifiers, name, script, language));
+        if(existing.containsKey(record.getName())) keystrokes.items.remove(existing.get(record.getName()));
+        addRecord(record);
     }
   }
 
   /**
    * Save the list of keystrokes to an XML file.
    */
-
   public static void saveRecords() throws Exception
   {
-    // Construct the XML.
-
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document doc = builder.newDocument();
-    Element root = doc.createElement("keystrokes");
-    doc.appendChild(root);
-    for (KeystrokeRecord record : records)
-    {
-      Element recordElement = doc.createElement("keystroke");
-      recordElement.setAttribute("name", record.getName());
-      recordElement.setAttribute("language", record.getLanguage());
-      recordElement.setAttribute("code", Integer.toString(record.getKeyCode()));
-      recordElement.setAttribute("modifiers", Integer.toString(record.getModifiers()));
-      Text scriptElement = doc.createTextNode(record.getScript());
-      recordElement.appendChild(scriptElement);
-      root.appendChild(recordElement);
-    }
-
-    // Save it to disk.
-    
-    File outFile = ApplicationPreferences.getPreferencesPath().resolve(KEYSTROKE_FILENAME).toFile();
-    
-    try (OutputStream out = new BufferedOutputStream(new SafeFileOutputStream(outFile, SafeFileOutputStream.OVERWRITE)))
-    {
-      DOMSource source = new DOMSource(doc);
-      StreamResult result = new StreamResult(out);
-      TransformerFactory transFactory = TransformerFactory.newInstance();
-      Transformer transformer = transFactory.newTransformer();
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      transformer.transform(source, result);
-    }
+      ms.marshal(keystrokes, ApplicationPreferences.getPreferencesPath().resolve(KEYSTROKE_FILENAME).toFile());
   }
+  
+    @XmlRootElement(name = "keystrokes")
+    public static class KeystrokeRecords {
+        @XmlElement(name="keystroke") List<KeystrokeRecord> items = new ArrayList<KeystrokeRecord>();
+        
+        public void addAll(KeystrokeRecord... elements)
+        {
+            items.clear();
+            Collections.addAll(items, elements);
+        }
+    }
 }
