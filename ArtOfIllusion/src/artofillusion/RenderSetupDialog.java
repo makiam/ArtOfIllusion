@@ -73,7 +73,7 @@ public class RenderSetupDialog
 
     FormContainer top = new FormContainer(4, 5);
     top.setDefaultLayout(new LayoutInfo(LayoutInfo.EAST, LayoutInfo.HORIZONTAL, new Insets(0, 0, 0, 5), null));
-    LayoutInfo labelLayout = new LayoutInfo(LayoutInfo.EAST, LayoutInfo.NONE, new Insets(0, 0, 0, 5), null);
+    final LayoutInfo labelLayout = new LayoutInfo(LayoutInfo.EAST, LayoutInfo.NONE, new Insets(0, 0, 0, 5), null);
     top.add(new BLabel(Translate.text("Width") + ":"), 0, 0, labelLayout);
     top.add(new BLabel(Translate.text("Height") + ":"), 0, 1, labelLayout);
     top.add(new BLabel(Translate.text("Render") + ":"), 0, 2, labelLayout);
