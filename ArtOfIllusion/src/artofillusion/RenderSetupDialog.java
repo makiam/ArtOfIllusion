@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2015 by Peter Eastman
-   Changes copyright (C) 2016 by Maksim Khramov
+   Changes copyright (C) 2016-2019 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -18,8 +18,8 @@ import buoy.event.*;
 import buoy.widget.*;
 import java.awt.*;
 import java.io.*;
-import java.util.*;
 import java.util.List;
+import java.util.Map;
 
 /** This class implements the dialog box in which the user can select a renderer, and
     specify options on how a scene should be rendered. */
@@ -74,13 +74,13 @@ public class RenderSetupDialog
     FormContainer top = new FormContainer(4, 5);
     top.setDefaultLayout(new LayoutInfo(LayoutInfo.EAST, LayoutInfo.HORIZONTAL, new Insets(0, 0, 0, 5), null));
     LayoutInfo labelLayout = new LayoutInfo(LayoutInfo.EAST, LayoutInfo.NONE, new Insets(0, 0, 0, 5), null);
-    top.add(new BLabel(Translate.text("Width")+":"), 0, 0, labelLayout);
-    top.add(new BLabel(Translate.text("Height")+":"), 0, 1, labelLayout);
-    top.add(new BLabel(Translate.text("Render")+":"), 0, 2, labelLayout);
-    top.add(new BLabel(Translate.text("StartTime")+":"), 0, 3, labelLayout);
-    top.add(new BLabel(Translate.text("EndTime")+":"), 0, 4, labelLayout);
-    top.add(widthField = new ValueField((double) width, ValueField.POSITIVE+ValueField.INTEGER), 1, 0);
-    top.add(heightField = new ValueField((double) height, ValueField.POSITIVE+ValueField.INTEGER), 1, 1);
+    top.add(new BLabel(Translate.text("Width") + ":"), 0, 0, labelLayout);
+    top.add(new BLabel(Translate.text("Height") + ":"), 0, 1, labelLayout);
+    top.add(new BLabel(Translate.text("Render") + ":"), 0, 2, labelLayout);
+    top.add(new BLabel(Translate.text("StartTime") + ":"), 0, 3, labelLayout);
+    top.add(new BLabel(Translate.text("EndTime") + ":"), 0, 4, labelLayout);
+    top.add(widthField = new ValueField((double) width, ValueField.POSITIVE + ValueField.INTEGER), 1, 0);
+    top.add(heightField = new ValueField((double) height, ValueField.POSITIVE + ValueField.INTEGER), 1, 1);
     movieGroup = new RadioButtonGroup();
     movieGroup.addEventLink(SelectionChangedEvent.class, this, "enableMovieComponents");
     top.add(new BRadioButton("Single Image", !movie, movieGroup), 1, 2);
@@ -142,8 +142,7 @@ public class RenderSetupDialog
           ImageSaver saver = new ImageSaver(parent, width, height, fps, startFrameNumber);
           if (!saver.clickedOk())
             return;
-          new RenderingDialog(parent, currentRenderer, theScene,
-            cam, cameraInfo, startTime, endTime, fps, subimages, saver);
+          new RenderingDialog(parent, currentRenderer, theScene, cam, cameraInfo, startTime, endTime, fps, subimages, saver);
         }
         catch (IOException ex)
         {

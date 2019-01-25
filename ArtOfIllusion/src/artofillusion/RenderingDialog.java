@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2011 by Peter Eastman
+   Changes copyright (C) 2019 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -143,6 +144,7 @@ public class RenderingDialog extends BDialog implements RenderListener
     }
   }
 
+  @SuppressWarnings("unused")
   private void doSave()
   {
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -162,6 +164,7 @@ public class RenderingDialog extends BDialog implements RenderListener
     toFront();
   }
 
+  @SuppressWarnings("unused")
   private void doFilter()
   {
     final CameraFilterDialog.FiltersPanel filtersPanel = new CameraFilterDialog.FiltersPanel(cameraForFilters, new Runnable()
@@ -213,6 +216,7 @@ public class RenderingDialog extends BDialog implements RenderListener
     dlg.setVisible(true);
   }
 
+  @SuppressWarnings("unused")
   private void paintCanvas(RepaintEvent ev)
   {
     if (previewImage != null)
@@ -238,11 +242,10 @@ public class RenderingDialog extends BDialog implements RenderListener
   /** Make sure all filters can be applied, and show a warning message if now. */
 
   private void verifyFilters(WindowWidget parent)
-  {
-    ImageFilter[] filters = cameraForFilters.getImageFilters();
-    for (int i = 0; i < filters.length; i++)
+  {    
+    for (ImageFilter filter: cameraForFilters.getImageFilters())
     {
-      int required = filters[i].getDesiredComponents();
+      int required = filter.getDesiredComponents();
       while (required != 0)
       {
         int component = required - (required&(required-1));
@@ -286,17 +289,16 @@ public class RenderingDialog extends BDialog implements RenderListener
   @Override
   public void statusChanged(String status)
   {
-    if (imgsaver != null)
-    {
-      String current = Integer.toString(currentFrame+1);
-      String total = Integer.toString(totalFrames);
-      if (subimages > 1)
-        label1.setText(Translate.text("renderSubimageLabel", new String [] {current, total, Integer.toString(currentSubimage+1), status}));
-      else
-        label1.setText(Translate.text("renderFrameLabel", new String [] {current, total, status}));
-    }
-    else
-      label1.setText(status+"...");
+    if (null == imgsaver)
+        label1.setText(status + "...");
+    else {
+        String current = Integer.toString(currentFrame+1);
+        String total = Integer.toString(totalFrames);
+        if (subimages > 1)
+            label1.setText(Translate.text("renderSubimageLabel", current, total, Integer.toString(currentSubimage+1), status));
+        else
+            label1.setText(Translate.text("renderFrameLabel", current, total, status));
+      }
     updateTimeLabel();
   }
 
@@ -314,7 +316,7 @@ public class RenderingDialog extends BDialog implements RenderListener
     try
     {
       EventQueue.invokeAndWait(new Runnable() {
-              @Override
+        @Override
         public void run()
         {
           try
@@ -337,7 +339,7 @@ public class RenderingDialog extends BDialog implements RenderListener
           catch (final IOException ex)
           {
             EventQueue.invokeLater(new Runnable() {
-                          @Override
+              @Override
               public void run()
               {
                 new BStandardDialog("", Translate.text("errorSavingFile", ex.getMessage() == null ? "" : ex.getMessage()), BStandardDialog.ERROR).showMessageDialog(parent);
