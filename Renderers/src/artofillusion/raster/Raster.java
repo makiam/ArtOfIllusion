@@ -12,13 +12,13 @@
 package artofillusion.raster;
 
 import artofillusion.*;
-import artofillusion.util.*;
 import artofillusion.image.*;
 import artofillusion.material.*;
 import artofillusion.math.*;
 import artofillusion.object.*;
 import artofillusion.texture.*;
 import artofillusion.ui.*;
+import artofillusion.util.*;
 import buoy.event.*;
 import buoy.widget.*;
 import java.awt.*;
@@ -46,7 +46,8 @@ public class Raster implements Renderer, Runnable
   private Thread renderThread;
   private RGBColor ambColor, envColor, fogColor;
   private TextureMapping envMapping;
-  private ThreadLocal threadRasterContext, threadCompositingContext;
+  private ThreadLocal<RasterContext> threadRasterContext;
+  private final ThreadLocal<CompositingContext> threadCompositingContext;
   private RowLock lock[];
   private double envParamValue[];
   private double time, smoothing = 1.0, smoothScale, focalDist, surfaceError = 0.02, fogDist;
@@ -65,16 +66,16 @@ public class Raster implements Renderer, Runnable
 
   public Raster()
   {
-    threadRasterContext = new ThreadLocal() {
+    threadRasterContext = new ThreadLocal<RasterContext>() {
       @Override
-      protected Object initialValue()
+      protected RasterContext initialValue()
       {
         return new RasterContext(theCamera, width);
       }
     };
-    threadCompositingContext = new ThreadLocal() {
+    threadCompositingContext = new ThreadLocal<CompositingContext>() {
       @Override
-      protected Object initialValue()
+      protected CompositingContext initialValue()
       {
         return new CompositingContext(theCamera);
       }
@@ -429,7 +430,7 @@ public class Raster implements Renderer, Runnable
           @Override
       public void execute(int index)
       {
-        RasterContext context = (RasterContext) threadRasterContext.get();
+        RasterContext context = threadRasterContext.get();
         ObjectInfo obj = sortedObjects[index];
         context.camera.setObjectTransform(obj.getCoords().fromLocal());
         renderObject(obj, orig, viewdir, obj.getCoords().toLocal(), context, thisThread);
@@ -546,7 +547,7 @@ public class Raster implements Renderer, Runnable
       @Override
       public void execute(int i1)
       {
-        CompositingContext context = (CompositingContext) threadCompositingContext.get();
+        CompositingContext context = threadCompositingContext.get();
         Vec3 dir = context.tempVec[1];
         RGBColor totalColor = context.totalColor;
         RGBColor totalTransparency = context.totalTransparency;
@@ -662,7 +663,7 @@ public class Raster implements Renderer, Runnable
       @Override
       public void cleanup()
       {
-        ((CompositingContext) threadCompositingContext.get()).cleanup();
+        threadCompositingContext.get().cleanup();
       }
     });
     threads.run();
