@@ -36,7 +36,7 @@ public class RenderingDialog extends BDialog implements RenderListener
   private ImageSaver imgsaver;
   private ImageAverager imgaverager;
   private BButton closeButton, saveButton, filterButton;
-  private BLabel label1, label2;
+  private BLabel renderStatusLabel, renderTimeLabel;
   private BFrame parent;
   private int w, h, fps, subimages, currentFrame, currentSubimage, totalFrames;
   private long startTime;
@@ -99,8 +99,8 @@ public class RenderingDialog extends BDialog implements RenderListener
     FormContainer content = new FormContainer(new double [] {1, 0, 0}, new double [] {0, 0, 1});
     setContent(content);
     content.setDefaultLayout(new LayoutInfo(LayoutInfo.WEST, LayoutInfo.HORIZONTAL, new Insets(2, 2, 2, 2), null));
-    content.add(label1 = new BLabel(Translate.text("Rendering", "...")), 0, 0);
-    content.add(label2 = new BLabel(Translate.text("elapsedTime", "0:00")), 0, 1);
+    content.add(renderStatusLabel = new BLabel(Translate.text("Rendering", "...")), 0, 0);
+    content.add(renderTimeLabel = new BLabel(Translate.text("elapsedTime", "0:00")), 0, 1);
     content.add(closeButton = Translate.button("cancel", this, "doCancel"), 2, 0);
     content.add(saveButton = Translate.button("save", this, "doSave"), 2, 1);
     content.add(filterButton = Translate.button("filter", this, "doFilter"), 1, 1);
@@ -234,9 +234,9 @@ public class RenderingDialog extends BDialog implements RenderListener
     int min = sec/60;
     sec -= 60*min;
     if (hour == 0)
-      label2.setText(Translate.text("elapsedTime", min+":"+(sec<10?"0":"")+sec));
+      renderTimeLabel.setText(Translate.text("elapsedTime", min+":"+(sec<10?"0":"")+sec));
     else
-      label2.setText(Translate.text("elapsedTime", hour+":"+(min<10?"0":"")+min+":"+(sec<10?"0":"")+sec));
+      renderTimeLabel.setText(Translate.text("elapsedTime", hour+":"+(min<10?"0":"")+min+":"+(sec<10?"0":"")+sec));
   }
 
   /** Make sure all filters can be applied, and show a warning message if now. */
@@ -290,14 +290,14 @@ public class RenderingDialog extends BDialog implements RenderListener
   public void statusChanged(String status)
   {
     if (null == imgsaver)
-        label1.setText(status + "...");
+        renderStatusLabel.setText(status + "...");
     else {
         String current = Integer.toString(currentFrame+1);
         String total = Integer.toString(totalFrames);
         if (subimages > 1)
-            label1.setText(Translate.text("renderSubimageLabel", current, total, Integer.toString(currentSubimage+1), status));
+            renderStatusLabel.setText(Translate.text("renderSubimageLabel", current, total, Integer.toString(currentSubimage+1), status));
         else
-            label1.setText(Translate.text("renderFrameLabel", current, total, status));
+            renderStatusLabel.setText(Translate.text("renderFrameLabel", current, total, status));
       }
     updateTimeLabel();
   }
@@ -328,7 +328,7 @@ public class RenderingDialog extends BDialog implements RenderListener
               done = true;
               if (imgsaver != null)
                 imgsaver.lastMovieImage();
-              label1.setText(Translate.text("doneRendering"));
+              renderStatusLabel.setText(Translate.text("doneRendering"));
               closeButton.setText(Translate.text("button.close"));
               saveButton.setVisible(imgsaver == null);
               filterButton.setVisible(imgsaver == null);
