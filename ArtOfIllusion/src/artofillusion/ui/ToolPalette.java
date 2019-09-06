@@ -1,5 +1,6 @@
 /* Copyright (C) 1999-2006 by Peter Eastman
    Modification copyright (C) 2016 by Petri Ihalainen
+   Changes copyright (C) 2019 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -15,14 +16,21 @@ import buoy.event.*;
 import buoy.widget.*;
 import java.awt.*;
 import artofillusion.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /** A ToolPalette is drawn as a grid of images, one for each EditingTool that is added to
     the palette.  It allows a single tool to be selected at any time. */
 
 public class ToolPalette extends CustomWidget
 {
-  private int width, height, numTools, selected, lastSelected, defaultTool;
-  private EditingTool tool[];
+  private int width, height, selected, lastSelected;
+  
+  private List<EditingTool> tools;
+  
+  private EditingTool defaultTool;
+  private EditingTool selectedTool;
+  
   private Dimension maxsize;
   private EditingWindow window;
 
@@ -39,11 +47,14 @@ public class ToolPalette extends CustomWidget
   {
     width = w;
     height = h;
-	window = win;
-    tool = new EditingTool [w*h];
-    numTools = 0;
+    window = win;
+    
+    tools = new ArrayList<>(w * h);
+
     selected = 0;
-    defaultTool = 0;
+    defaultTool = null;
+    selectedTool = null;
+    
     maxsize = new Dimension(0, 0);
     addEventLink(MousePressedEvent.class, this, "mousePressed");
     addEventLink(MouseClickedEvent.class, this, "mouseClicked");
@@ -57,9 +68,9 @@ public class ToolPalette extends CustomWidget
 
   /** Add a new tool. */
 
-  public void addTool(EditingTool t)
+  public void addTool(EditingTool tool)
   {
-    addTool(numTools, t);
+    addTool(tools.size(), tool);
   }
 
   /** Add a new tool. */
@@ -82,15 +93,14 @@ public class ToolPalette extends CustomWidget
     numTools++;
     int buttonMargin = ThemeManager.getButtonMargin();
     int paletteMargin = ThemeManager.getPaletteMargin();
-    int w = t.getButton().getWidth() + 2*buttonMargin;
-    int h = t.getButton().getHeight() + 2*buttonMargin;
+    int w = t.getButton().getWidth() + 2 * buttonMargin;
+    int h = t.getButton().getHeight() + 2 * buttonMargin;
     if (w > maxsize.width)
       maxsize.width = w;
     if (h > maxsize.height)
       maxsize.height = h;
     for (int i = 0; i < numTools; i++)
-      tool[i].getButton().setPosition((i%width)*maxsize.width + paletteMargin + buttonMargin,
-          (i/width)*maxsize.height + paletteMargin + buttonMargin);
+      tool[i].getButton().setPosition((i % width) * maxsize.width + paletteMargin + buttonMargin, (i / width) * maxsize.height + paletteMargin + buttonMargin);
     if (numTools == 1)
       t.activate();
   }
@@ -99,30 +109,28 @@ public class ToolPalette extends CustomWidget
 
   public int getNumTools()
   {
-    return numTools;
+    return tools.size();
   }
 
   /** Get a tool by index. */
 
   public EditingTool getTool(int index)
   {
-    return tool[index];
+    return tools.get(index);
   }
 
   /** Get the default tool. */
 
   public EditingTool getDefaultTool()
   {
-    return tool[defaultTool];
+    return defaultTool;
   }
 
   /** Set the default tool. */
 
   public void setDefaultTool(EditingTool t)
   {
-    for (int i = 0; i < tool.length; i++)
-      if (tool[i] == t)
-        defaultTool = i;
+    defaultTool = t;
   }
 
   /** Return the number of the currently selected tool. */
@@ -136,7 +144,7 @@ public class ToolPalette extends CustomWidget
 
   public EditingTool getSelectedTool()
   {
-    return tool[selected];
+    return tools.get(selected);
   }
 
   private void paint(RepaintEvent ev)
@@ -145,20 +153,10 @@ public class ToolPalette extends CustomWidget
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     int paletteMargin = ThemeManager.getPaletteMargin();
     g.setColor(ThemeManager.getPaletteBackgroundColor());
-    g.fillRoundRect(0, 0, width*maxsize.width + 2*paletteMargin, height*maxsize.height + 2*paletteMargin, 8, 8);
-    //So as to ensure graphical consistency, buttons must be drawn following a certain order:
-    //normal buttons first
-    for (int i = 0; i < numTools; i++)
-      if (!tool[i].getButton().isSelected() && !tool[i].getButton().isHighlighted())
-          tool[i].getButton().paint(g);
-    //highlighted buttons next
-    for (int i = 0; i < numTools; i++)
-      if (!tool[i].getButton().isSelected() && tool[i].getButton().isHighlighted())
-          tool[i].getButton().paint(g);
-    //then the selected one.
-    for (int i = 0; i < numTools; i++)
-      if (tool[i].getButton().isSelected())
-          tool[i].getButton().paint(g);
+    g.fillRoundRect(0, 0, width * maxsize.width + 2 * paletteMargin, height * maxsize.height + 2 * paletteMargin, 8, 8);
+
+    for(EditingTool tool: tools) tool.getButton().paint(g);
+
   }
 
   private void showToolTip(ToolTipEvent ev)
@@ -177,8 +175,8 @@ public class ToolPalette extends CustomWidget
   @Override
   public Dimension getPreferredSize()
   {
-    int paletteMargin = ThemeManager.getPaletteMargin();
-    return new Dimension(width*maxsize.width+2*paletteMargin, height*maxsize.height+2*paletteMargin);
+    int paletteMargin = ThemeManager.getPaletteMargin() * 2;
+    return new Dimension(width * maxsize.width + paletteMargin, height * maxsize.height + paletteMargin);
   }
 
   @Override
@@ -198,14 +196,15 @@ public class ToolPalette extends CustomWidget
       repaint();
       tool[i].activate();
     }
-	// This is a bit ugly. The 'toolChanged' should be defined in EditingWindow but that 
-	// causes error at compile with Score and UVMappingEditorWindow
-	if(window != null){
-	  if (window instanceof LayoutWindow)
-		((LayoutWindow)window).toolChanged(tool[i]);
-	  if (window instanceof ObjectEditorWindow)
-		((ObjectEditorWindow)window).toolChanged(tool[i]);
-	}
+    
+    // This is a bit ugly. The 'toolChanged' should be defined in EditingWindow but that 
+    // causes error at compile with Score and UVMappingEditorWindow
+    if(null == window) return;
+
+    if (window instanceof LayoutWindow || window instanceof ObjectEditorWindow)
+      ((LayoutWindow)window).toolChanged(tool[i]);
+
+
   }
 
   private void mouseClicked(MouseClickedEvent e)
@@ -225,31 +224,40 @@ public class ToolPalette extends CustomWidget
 
   private void mouseExited()
   {
-    for (int i = 0; i < numTools; i++)
-	  tool[i].getButton().setHighlighted(false);
+    for(EditingTool tool: tools)
+      tool.getButton().setHighlighted(false);
     repaint();
   }
 
   private void mouseMoved(MouseMovedEvent ev)
   {
+    EditingTool tool = find
     int t = findClickedTool(ev.getPoint());
     for (int i = 0; i < numTools; i++)
       tool[i].getButton().setHighlighted(t == i);
     repaint();
   }
 
-  private int findClickedTool(Point p)
+  private EditingTool findClickedToolByPoint(Point point) {
+    Rectangle r = new Rectangle();
+    for(EditingTool tool: tools) 
+    {
+      ToolButton tb = tool.getButton();      
+      r.setBounds(tb.getPosition().x, tb.getPosition().y, tb.getWidth(), tb.getHeight());
+      if(r.contains(point)) return tool;
+    }
+
+    return null;
+  }
+  
+  private int findClickedTool(Point point)
   {
     Rectangle r = new Rectangle();
-    for (int i = 0; i < numTools; i++)
+    for(EditingTool tool: tools) 
     {
-      Point pos = tool[i].getButton().getPosition();
-      r.x = pos.x;
-      r.y = pos.y;
-      r.width = tool[i].getButton().getWidth();
-      r.height = tool[i].getButton().getHeight();
-      if (r.contains(p))
-        return i;
+      ToolButton tb = tool.getButton();      
+      r.setBounds(tb.getPosition().x, tb.getPosition().y, tb.getWidth(), tb.getHeight());
+      if(r.contains(point)) return tools.indexOf(tool);
     }
     return -1;
   }
