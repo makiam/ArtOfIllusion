@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2011 by Peter Eastman
+   Changes copyright (C) 2023 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -10,6 +11,7 @@
 
 package artofillusion.ui;
 
+import artofillusion.ArtOfIllusion;
 import buoy.event.*;
 import buoy.widget.*;
 import java.awt.*;
@@ -51,6 +53,7 @@ public class ComponentsDialog extends BDialog
   public ComponentsDialog(WindowWidget parent, String prompt, Widget components[], String labels[], Runnable onOK, Runnable onCancel)
   {
     super(parent, (onOK == null && onCancel == null));
+    this.getComponent().setIconImage(ArtOfIllusion.APP_ICON.getImage());
     comp = components;
     okCallback = onOK;
     cancelCallback = onCancel;
