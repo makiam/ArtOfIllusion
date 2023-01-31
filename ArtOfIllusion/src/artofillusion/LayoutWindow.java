@@ -1105,7 +1105,9 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
 
     fileMenuItem[0].setEnabled(modified);
     editMenuItem[0].setEnabled(undoStack.canUndo()); // Undo
+    editMenuItem[0].setText(undoStack.canUndo() ? Translate.text("menu.undo") + " " + undoStack.getUndoName() : Translate.text("menu.undo"));
     editMenuItem[1].setEnabled(undoStack.canRedo()); // Redo
+    editMenuItem[1].setText(undoStack.canRedo() ? Translate.text("menu.redo") + " " + undoStack.getRedoName() : Translate.text("menu.redo"));
     editMenuItem[2].setEnabled(numSelObjects > 0); // Cut
     editMenuItem[3].setEnabled(numSelObjects > 0); // Copy
     editMenuItem[4].setEnabled(ArtOfIllusion.getClipboardSize() > 0); // Paste
@@ -1480,7 +1482,7 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
 
   public Collection<ObjectInfo> getSelectedObjects()
   {
-    ArrayList<ObjectInfo> objects = new ArrayList<ObjectInfo>();
+    ArrayList<ObjectInfo> objects = new ArrayList<>();
     for (int index : theScene.getSelection())
       objects.add(theScene.getObject(index));
     return objects;
@@ -2064,16 +2066,17 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
 
   public void objectLayoutCommand()
   {
-    int i, sel[] = getSelectedIndices();
-    TransformDialog dlg;
+    int sel[] = getSelectedIndices();
+    if (sel.length == 0)
+      return;
+    
     ObjectInfo obj[] = new ObjectInfo [sel.length];
     Vec3 orig, size;
     double angles[], values[];
 
-    if (sel.length == 0)
-      return;
+
     UndoRecord undo = new UndoRecord(this, false);
-    for (i = 0; i < sel.length; i++)
+    for (int i = 0; i < sel.length; i++)
       {
         obj[i] = theScene.getObject(sel[i]);
         undo.addCommand(UndoRecord.COPY_OBJECT, obj[i].getObject(), obj[i].getObject().duplicate());
@@ -2084,7 +2087,7 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
       orig = obj[0].getCoords().getOrigin();
       angles = obj[0].getCoords().getRotationAngles();
       size = obj[0].getObject().getBounds().getSize();
-      dlg = new TransformDialog(this, Translate.text("objectLayoutTitle", theScene.getObject(sel[0]).getName()),
+      TransformDialog dlg = new TransformDialog(this, Translate.text("objectLayoutTitle", theScene.getObject(sel[0]).getName()),
           new double [] {orig.x, orig.y, orig.z, angles[0], angles[1], angles[2],
           size.x, size.y, size.z}, false, false);
       if (!dlg.clickedOk())
@@ -2117,11 +2120,11 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
     }
     else
     {
-      dlg = new TransformDialog(this, Translate.text("objectLayoutTitleMultiple"), false, false);
+      TransformDialog dlg = new TransformDialog(this, Translate.text("objectLayoutTitleMultiple"), false, false);
       if (!dlg.clickedOk())
         return;
       values = dlg.getValues();
-      for (i = 0; i < sel.length; i++)
+      for (int i = 0; i < sel.length; i++)
       {
         orig = obj[i].getCoords().getOrigin();
         angles = obj[i].getCoords().getRotationAngles();
@@ -2425,17 +2428,18 @@ public class LayoutWindow extends BFrame implements EditingWindow, PopupMenuMana
   public void renameObjectCommand()
   {
     int sel[] = getSelectedIndices();
-    ObjectInfo info;
 
     if (sel.length != 1)
       return;
-    info = theScene.getObject(sel[0]);
+
+    String current = theScene.getObject(sel[0]).getName();
     BStandardDialog dlg = new BStandardDialog("", Translate.text("renameObjectTitle"), BStandardDialog.PLAIN);
-    String val = dlg.showInputDialog(this, null, info.getName());
-    if (val == null)
+    String newName = dlg.showInputDialog(this, null, current);
+    if (newName == null)
       return;
-    setUndoRecord(new UndoRecord(this, false, UndoRecord.RENAME_OBJECT, sel[0], info.getName()));
-    setObjectName(sel[0], val);
+    UndoableEdit edit = new ObjectRenameEdit(this, sel[0], newName);
+    setUndoRecord(new UndoRecord(this, false, UndoRecord.USER_DEFINED_ACTION, edit));
+    
   }
 
   public void convertToTriangleCommand()
