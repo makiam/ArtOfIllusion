@@ -29,7 +29,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.List;
 
-public class TexturesAndMaterialsDialog extends BDialog
+public class TexturesAndMaterialsDialog extends BDialog 
 {
   private static final File assetsFolder = new File(ArtOfIllusion.APP_DIRECTORY, "Textures and Materials");
   Scene theScene;
@@ -61,7 +61,19 @@ public class TexturesAndMaterialsDialog extends BDialog
     @Override
     public void itemAdded(int index, java.lang.Object obj)
     {
-      ((SceneTreeModel) libraryList.getModel()).rebuildScenes(null);
+        ((SceneTreeModel) libraryList.getModel()).rebuildScenes(null);
+        if (obj instanceof Texture)
+        {
+          Texture tex = (Texture) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> theScene.addTexture(tex, index), () -> theScene.removeTexture(index)).setName("Add Texture");
+          parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
+        else
+        {
+          Material mat = (Material) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> theScene.addMaterial(mat, index), () -> theScene.removeMaterial(index)).setName("Add Material");
+          parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
     }
 
     @Override
@@ -73,7 +85,19 @@ public class TexturesAndMaterialsDialog extends BDialog
     @Override
     public void itemRemoved(int index, java.lang.Object obj)
     {
-      ((SceneTreeModel) libraryList.getModel()).rebuildScenes(null);
+        ((SceneTreeModel) libraryList.getModel()).rebuildScenes(null);
+        if (obj instanceof Texture)
+        {
+          Texture tex = (Texture) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> theScene.removeTexture(index), () -> theScene.addTexture(tex, index)).setName("Remove Texture");
+          parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
+        else
+        {
+          Material mat = (Material) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> theScene.removeMaterial(index), () -> theScene.addMaterial(mat, index)).setName("Remove Material");
+          parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
     }
   };
 
@@ -788,10 +812,10 @@ public class TexturesAndMaterialsDialog extends BDialog
         try
         {
           Scene theScene = getScene();
-          textures = new ArrayList<TextureTreeNode>();
+          textures = new ArrayList<>();
           for (int i = 0; i < theScene.getNumTextures(); i++)
             textures.add(new TextureTreeNode(this, i));
-          materials = new ArrayList<MaterialTreeNode>();
+          materials = new ArrayList<>();
           for (int i = 0; i < theScene.getNumMaterials(); i++)
             materials.add(new MaterialTreeNode(this, i));
         }
@@ -859,7 +883,7 @@ public class TexturesAndMaterialsDialog extends BDialog
 
   private class SceneTreeModel implements TreeModel
   {
-    private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
+    private ArrayList<TreeModelListener> listeners = new ArrayList<>();
     private DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
     @Override
@@ -969,26 +993,12 @@ public class TexturesAndMaterialsDialog extends BDialog
 
     void rebuildScenes(final File file)
     {
-      updateTree(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          rebuildNode(root, file);
-        }
-      });
+      updateTree(() -> rebuildNode(root, file));
     }
 
     void rebuildLibrary()
     {
-      updateTree(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          ((FolderTreeNode) rootNodes.get(1)).children = null;
-        }
-      });
+      updateTree(() -> {((FolderTreeNode) rootNodes.get(1)).children = null; });
     }
 
     void resetFilter()
@@ -998,14 +1008,7 @@ public class TexturesAndMaterialsDialog extends BDialog
 
     void addScene(final File file)
     {
-      updateTree(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          rootNodes.add(new SceneTreeNode(file));
-        }
-      });
+      updateTree(() -> rootNodes.add(new SceneTreeNode(file)));
     }
 
     void updateTree(Runnable updater)
