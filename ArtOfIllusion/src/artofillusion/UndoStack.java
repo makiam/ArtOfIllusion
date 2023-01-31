@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2012 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2023 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -18,14 +18,8 @@ import java.util.*;
 
 public class UndoStack
 {
-    private final LinkedList<UndoRecord> undoList;
-    private final LinkedList<UndoRecord> redoList;
-
-  public UndoStack()
-  {
-    undoList = new LinkedList<UndoRecord>();
-    redoList = new LinkedList<UndoRecord>();
-  }
+    private final LinkedList<UndoRecord> undoList = new LinkedList<>();
+    private final LinkedList<UndoRecord> redoList = new LinkedList<>();
 
   /**
    * Determine whether there are any undo records available, so that an Undo command
@@ -34,7 +28,7 @@ public class UndoStack
 
   public boolean canUndo()
   {
-    return (undoList.size() > 0);
+    return !undoList.isEmpty();
   }
 
   /**
@@ -44,7 +38,7 @@ public class UndoStack
 
   public boolean canRedo()
   {
-    return (redoList.size() > 0);
+    return !redoList.isEmpty();
   }
 
   /**
@@ -86,4 +80,13 @@ public class UndoStack
     UndoRecord record = redoList.removeLast();
     undoList.add(record.execute());
   }
+  
+  public String getRedoName() {
+    return redoList.isEmpty() ? "" : redoList.getLast().getName();
+  }
+  
+  public String getUndoName() {
+    return undoList.isEmpty() ? "" : undoList.getLast().getName();
+  }  
+  
 }
