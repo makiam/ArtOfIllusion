@@ -21,6 +21,7 @@ import buoy.widget.*;
 import java.awt.*;
 import java.lang.reflect.*;
 import java.util.List;
+import java.util.Optional;
 
 /** This class implements the dialog box which is used to choose textures for objects.
     It presents a list of all available textures from which the user can select one.
@@ -43,7 +44,7 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
   private ValueSelector paramValueWidget[];
   private int fieldParamIndex[];
   private BScrollPane paramsScroller;
-  private Runnable callback;
+  private Optional<Runnable> callback = Optional.empty();
   private Texture oldTexture;
   private TextureMapping oldTexMapping;
   Material oldMaterial;
@@ -301,7 +302,7 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
 
   public void setCallback(Runnable cb)
   {
-    callback = cb;
+    callback = Optional.ofNullable(cb);
   }
 
   /** Layout the content panel for a simple texture. */
@@ -508,6 +509,7 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
         name = "Untitled "+j;
       } while (scene.getTexture(name) != null);
       tex.setName(name);
+      
       scene.addTexture(tex);
       tex.edit(window, scene);
       boolean layered = (typeChoice.getSelectedIndex() == 1);
@@ -633,16 +635,14 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
     window.setUndoRecord(undo);
     window.updateImage();
     window.getScore().tracksModified(false);
-    if (callback != null)
-      callback.run();
+    callback.ifPresent(runnable -> runnable.run());
     dispose();
   }
 
   private void doCancel()
   {
     dispose();
-    if (callback != null)
-      callback.run();
+    callback.ifPresent(runnable -> runnable.run());
   }
 
   private void paramTypeChanged(ValueChangedEvent ev)
@@ -834,15 +834,21 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
   @Override
   public void itemAdded(int index, Object obj)
   {
+
     if (obj instanceof Texture)
     {
       Texture tex = (Texture) obj;
       texList.add(index, tex.getName());
+      UndoableEdit action = new SceneUndoableEdit(() -> scene.addTexture(tex, index), () -> scene.removeTexture(index)).setName("Add Texture");
+      window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
     }
     else
     {
       Material mat = (Material) obj;
-      matList.add(index+1, mat.getName());
+      int mIndex = index+1;
+      matList.add(mIndex, mat.getName());
+      UndoableEdit action = new SceneUndoableEdit(() -> scene.addMaterial(mat, mIndex), () -> scene.removeMaterial(mIndex)).setName("Add Material");
+      window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
     }
   }
 
