@@ -14,6 +14,9 @@ import artofillusion.math.CoordinateSystem;
 import artofillusion.math.RGBColor;
 import artofillusion.object.ObjectInfo;
 import artofillusion.object.Sphere;
+import artofillusion.texture.ParameterValue;
+import artofillusion.texture.Texture;
+import artofillusion.texture.TextureMapping;
 import artofillusion.ui.ColorSampleWidget;
 import artofillusion.ui.ComponentsDialog;
 import artofillusion.ui.Translate;
@@ -41,9 +44,9 @@ public class EnvironmentPropertiesDialog {
     private final LayoutWindow owner;
     private final Scene scene;
     
-    private final RGBColor ambColor;
-    private final RGBColor envColor;
-    private final RGBColor fogColor;
+    private final RGBColor ambColor, ambColorOld;
+    private final RGBColor envColor, envColorOld;
+    private final RGBColor fogColor, fogColorOld;
     
     private final ColorSampleWidget ambPatch, envPatch, fogPatch;
     
@@ -59,6 +62,14 @@ public class EnvironmentPropertiesDialog {
     private final ObjectInfo envInfo = new ObjectInfo(envSphere, new CoordinateSystem(), "Environment");
     
     private final BCheckBox fogBox;
+    private final Boolean fog;
+    private final double fogDistance;
+    private final int environmentMode;
+    
+    private final Texture texture;
+    private final TextureMapping mapping;
+    private final ParameterValue[] values;
+    
     private final ValueField fogField;
     
     @SuppressWarnings("ResultOfObjectAllocationIgnored")
@@ -70,6 +81,10 @@ public class EnvironmentPropertiesDialog {
         this.envColor = scene.getEnvironmentColor().duplicate();
         this.fogColor = scene.getFogColor().duplicate();
         
+        this.ambColorOld = scene.getAmbientColor().duplicate();
+        this.envColorOld = scene.getEnvironmentColor().duplicate();
+        this.fogColorOld = scene.getFogColor().duplicate();
+        
         ambPatch = new ColorSampleWidget(ambColor, Translate.text("ambientColor"));
         envPatch = new ColorSampleWidget(envColor, Translate.text("environmentColor"));
         fogPatch = new ColorSampleWidget(fogColor, Translate.text("fogColor"));
@@ -77,9 +92,14 @@ public class EnvironmentPropertiesDialog {
         
         
         fogBox = new BCheckBox("Environment Fog", scene.getFogState());
+        fog = scene.getFogState();
+        
         fogField = new ValueField(scene.getFogDistance(), ValueField.POSITIVE);
-
+        fogDistance = scene.getFogDistance();
+        
         envChoice.setSelectedIndex(scene.getEnvironmentMode());
+        environmentMode = scene.getEnvironmentMode();
+        
         envChoice.getComponent().addActionListener(this::onChoiceAction);
         
         final BButton envButton = new BButton(Translate.text("Choose") + ":");
@@ -97,7 +117,9 @@ public class EnvironmentPropertiesDialog {
         envSphere.setParameterValues(scene.getEnvironmentParameterValues());
         envLabel.setText(envSphere.getTexture().getName());
         
-        
+        texture = scene.getEnvironmentTexture();
+        mapping = scene.getEnvironmentMapping();
+        values = scene.getEnvironmentParameterValues();
     
     new ComponentsDialog(owner, Translate.text("environmentTitle"),
         new Widget [] {ambPatch, envChoice, envPanel, fogBox, fogPatch, fogField},
@@ -106,7 +128,16 @@ public class EnvironmentPropertiesDialog {
     }
     
     private void cancel() {
-        //Nothing to do on cancel
+        logger.info("Reverting environment settings");
+        scene.setAmbientColor(ambColorOld);
+        scene.setFogColor(fogColorOld);
+        scene.setEnvironmentColor(envColorOld);
+        scene.setFog(fog, fogDistance);
+        scene.setEnvironmentMode(environmentMode);
+        
+        scene.setEnvironmentTexture(texture);
+        scene.setEnvironmentMapping(mapping);
+        scene.setEnvironmentParameterValues(values);
     }
     
     private boolean isUnchanged() {
@@ -127,7 +158,11 @@ public class EnvironmentPropertiesDialog {
             return;
         }
         logger.info("Applying environment parameters");
-        commit();
+
+        UndoableEdit action = new SceneUndoableEdit(this::commit, this::cancel).setName("Scene Environment Properties");        
+        action.execute();
+        
+        owner.setUndoRecord(new UndoRecord(owner, false, UndoRecord.USER_DEFINED_ACTION, action));
     }
     
     private void commit() {
