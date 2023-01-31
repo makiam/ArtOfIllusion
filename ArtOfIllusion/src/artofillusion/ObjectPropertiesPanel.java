@@ -74,8 +74,21 @@ public class ObjectPropertiesPanel extends ColumnContainer
     {
       @Override
       public void itemAdded(int index, Object obj)
-      {
+      {        
         rebuildContents();
+        Scene scene = window.getScene();
+        if (obj instanceof Texture)
+        {
+          Texture tex = (Texture) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> scene.addTexture(tex, index), () -> scene.removeTexture(index)).setName("Add Texture");
+          window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
+        else
+        {
+          Material mat = (Material) obj;
+          UndoableEdit action = new SceneUndoableEdit(() -> scene.addMaterial(mat, index), () -> scene.removeMaterial(index)).setName("Add Material");
+          window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
+        }
       }
       @Override
       public void itemRemoved(int index, Object obj)
@@ -432,7 +445,7 @@ public class ObjectPropertiesPanel extends ColumnContainer
 
   private double getNewValue(double oldval, double newval)
   {
-    return (Double.isNaN(newval) ? oldval : newval);
+    return Double.isNaN(newval) ? oldval : newval;
   }
 
   /**
@@ -447,8 +460,10 @@ public class ObjectPropertiesPanel extends ColumnContainer
     if (objects.length == 0 || objects[0].getName().equals(nameField.getText()))
       return;
     int which = window.getScene().indexOf(objects[0]);
-    window.setUndoRecord(new UndoRecord(window, false, UndoRecord.RENAME_OBJECT, which, objects[0].getName()));
-    window.setObjectName(which, nameField.getText());
+    UndoableEdit action = new ObjectRenameEdit(window, which, nameField.getText());
+    action.execute();
+    window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
+    
     if (ev instanceof KeyPressedEvent)
       window.getView().requestFocus(); // This is where they'll probably expect it to go
   }
@@ -543,11 +558,11 @@ public class ObjectPropertiesPanel extends ColumnContainer
     if (noMaterial || mat != null)
     {
       UndoRecord undo = new UndoRecord(window, false);
-      for (int i = 0; i < objects.length; i++)
-        if (objects[i].getObject().getMaterial() != mat)
-        {
-          undo.addCommand(UndoRecord.COPY_OBJECT, objects[i].getObject(), objects[i].getObject().duplicate());
-          objects[i].setMaterial(mat, noMaterial ? null : mat.getDefaultMapping(objects[i].getObject()));
+        for (ObjectInfo object : objects) {
+            if (object.getObject().getMaterial() != mat) {
+                undo.addCommand(UndoRecord.COPY_OBJECT, object.getObject(), object.getObject().duplicate());
+                object.setMaterial(mat, noMaterial ? null : mat.getDefaultMapping(object.getObject()));
+            }
         }
       window.setUndoRecord(undo);
       window.updateImage();
