@@ -506,14 +506,14 @@ public class ObjectPropertiesPanel extends ColumnContainer
     }
     if (tex != null)
     {
-      UndoRecord undo = new UndoRecord(window, false);
-      for (int i = 0; i < objects.length; i++)
-        if (objects[i].getObject().getTexture() != tex)
-        {
-          undo.addCommand(UndoRecord.COPY_OBJECT, objects[i].getObject(), objects[i].getObject().duplicate());
-          objects[i].setTexture(tex, tex.getDefaultMapping(objects[i].getObject()));
-        }
-      window.setUndoRecord(undo);
+      CompoundEdit actions = new CompoundEdit();
+      for (ObjectInfo item : objects)
+      {
+        Object3D obj = item.getObject();
+        if (obj.getTexture() == tex) continue;
+        actions.add(new SetTextureEdit(item, tex));
+      }
+      window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, actions));
       window.updateImage();
       window.getScore().tracksModified(false);
     }

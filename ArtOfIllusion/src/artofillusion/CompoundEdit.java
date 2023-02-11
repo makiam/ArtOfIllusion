@@ -49,7 +49,7 @@ public final class CompoundEdit implements UndoableEdit {
     }
 
     @Override
-    public UndoableEdit setName(String name) {
+    public CompoundEdit setName(String name) {
         this.name = Optional.ofNullable(name);
         return this;
     }
