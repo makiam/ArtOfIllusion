@@ -39,7 +39,7 @@ public class Scene
   private Vector<Texture> textures;
   private Vector<ImageMap> images;
   private Vector<Integer> selection;
-  private Vector<ListChangeListener> textureListeners, materialListeners;
+  private Vector<ListChangeListener> textureListeners, materialListeners, imageListeners;
   private HashMap<String, Object> metadataMap;
   private HashMap<ObjectInfo, Integer> objectIndexMap;
   private RGBColor ambientColor, environColor, fogColor;
@@ -70,8 +70,9 @@ public class Scene
     images = new Vector<ImageMap>();
     selection = new Vector<Integer>();
     metadataMap = new HashMap<String, Object>();
-    textureListeners = new Vector<ListChangeListener>();
-    materialListeners = new Vector<ListChangeListener>();
+    textureListeners = new Vector<>();
+    materialListeners = new Vector<>();
+    imageListeners = new Vector<>();
     defTex.setName("Default Texture");
     textures.addElement(defTex);
     ambientColor = new RGBColor(0.3f, 0.3f, 0.3f);
@@ -716,7 +717,19 @@ public class Scene
   {
     textureListeners.removeElement(ls);
   }
+  
+  /** Add an object which wants to be notified when the list of Images in the Scene changes. */
+  public void addImageListener(ListChangeListener listener)
+  {
+    imageListeners.add(listener);    
+  }
 
+  /** Remove an object from the set to be notified when the list of Images changes. */
+  public void removeImageListener(ListChangeListener listener)
+  {
+    imageListeners.remove(listener);
+  }
+  
   /**
    * Get a piece of metadata stored in this scene.
    *
@@ -764,16 +777,17 @@ public class Scene
   
   /** Add an image map to the scene. */
 
-  public void addImage(ImageMap im)
+  public void addImage(ImageMap image)
   {
-    images.addElement(im);
+    images.add(image);
+    imageListeners.forEach(ls -> ls.itemAdded(images.size()-1, image));
   }
 
   /** Remove an image map from the scene. */
 
   public boolean removeImage(int which)
   {
-    ImageMap image = images.elementAt(which);
+    ImageMap image = images.get(which);
 
     for (int i = 0; i < textures.size(); i++)
       if (textures.elementAt(i).usesImage(image))
@@ -781,7 +795,8 @@ public class Scene
     for (int i = 0; i < materials.size(); i++)
       if (materials.elementAt(i).usesImage(image))
         return false;
-    images.removeElementAt(which);
+    images.remove(which);
+    imageListeners.forEach(listener -> listener.itemRemoved(which, image));
     return true;
   }
   
