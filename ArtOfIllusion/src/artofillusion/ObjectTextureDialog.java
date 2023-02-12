@@ -22,6 +22,8 @@ import java.awt.*;
 import java.lang.reflect.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** This class implements the dialog box which is used to choose textures for objects.
     It presents a list of all available textures from which the user can select one.
@@ -830,13 +832,15 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
   }
 
   /* ListChangeListener methods. */
-
+  private static final Logger logger = Logger.getLogger(ObjectTextureDialog.class.getName());
+  
   @Override
   public void itemAdded(int index, Object obj)
   {
 
     if (obj instanceof Texture)
     {
+      logger.log(Level.INFO, "Texture added: {0}", index);
       Texture tex = (Texture) obj;
       texList.add(index, tex.getName());
       UndoableEdit action = new SceneUndoableEdit(() -> scene.addTexture(tex, index), () -> scene.removeTexture(index)).setName("Add Texture");

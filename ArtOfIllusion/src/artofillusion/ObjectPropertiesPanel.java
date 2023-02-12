@@ -1,5 +1,5 @@
 /* Copyright (C) 2006-2009 by Peter Eastman
-   Changes copyright (C) 2017-2022 by Maksim Khramov
+   Changes copyright (C) 2017-2023 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -33,12 +33,12 @@ import java.util.List;
 
 public class ObjectPropertiesPanel extends ColumnContainer
 {
-  private LayoutWindow window;
+  private final LayoutWindow window;
   private BTextField nameField;
   private ValueField xPosField, yPosField, zPosField, xRotField, yRotField, zRotField;
   private BComboBox textureChoice, materialChoice;
   private PropertyEditor propEditor[];
-  private ObjectInfo objects[];
+  private ObjectInfo[] objects;
   private Property properties[];
   private Object3D previousObjects[];
   private boolean ignoreNextChange;
@@ -212,20 +212,9 @@ public class ObjectPropertiesPanel extends ColumnContainer
         selected = names.size();
         names.add(Translate.text("layeredTexture"));
       }
-      
-      for (Texture texture : PluginRegistry.getPlugins(Texture.class))
-      {
-        try
-        {
-          Method mtd = texture.getClass().getMethod("getTypeName");
-          names.add(Translate.text("newTextureOfType", mtd.invoke(null, null)));
-        }
-        catch (Exception ex)
-        {
-          ex.printStackTrace();
-        }
-      }
-      textureChoice.setModel(new DefaultComboBoxModel(names));
+      names.addAll(textureTypeNames);
+
+      textureChoice.setModel(new DefaultComboBoxModel<>(names));
       textureChoice.setSelectedIndex(selected);
     }
 
@@ -243,7 +232,7 @@ public class ObjectPropertiesPanel extends ColumnContainer
     }
     if (canSetMaterial)
     {
-      Vector<String> names = new Vector<String>();
+      Vector<String> names = new Vector<>();
       int selected = -1;
       for (int i = 0; i < scene.getNumMaterials(); i++)
       {
@@ -259,20 +248,9 @@ public class ObjectPropertiesPanel extends ColumnContainer
       else if (mat == null)
         selected = names.size();
       names.add(Translate.text("none"));
-      List<Material> materialTypes = PluginRegistry.getPlugins(Material.class);
-      for (Material material : materialTypes)
-      {
-        try
-        {
-          Method mtd = material.getClass().getMethod("getTypeName");
-          names.add(Translate.text("newMaterialOfType", mtd.invoke(null, null)));
-        }
-        catch (Exception ex)
-        {
-          ex.printStackTrace();
-        }
-      }
-      materialChoice.setModel(new DefaultComboBoxModel(names));
+      names.addAll(materialTypeNames);
+
+      materialChoice.setModel(new DefaultComboBoxModel<>(names));
       materialChoice.setSelectedIndex(selected);
     }
 
@@ -557,14 +535,14 @@ public class ObjectPropertiesPanel extends ColumnContainer
     }
     if (noMaterial || mat != null)
     {
-      UndoRecord undo = new UndoRecord(window, false);
-        for (ObjectInfo object : objects) {
-            if (object.getObject().getMaterial() != mat) {
-                undo.addCommand(UndoRecord.COPY_OBJECT, object.getObject(), object.getObject().duplicate());
-                object.setMaterial(mat, noMaterial ? null : mat.getDefaultMapping(object.getObject()));
-            }
-        }
-      window.setUndoRecord(undo);
+      CompoundEdit actions = new CompoundEdit();
+      for (ObjectInfo object : objects) {
+          if (object.getObject().getMaterial() != mat) {              
+              MaterialMapping map = noMaterial ? null : mat.getDefaultMapping(object.getObject());
+              actions.add(new SetMaterialEdit(object, mat, map));
+          }
+      }
+      window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, actions));
       window.updateImage();
       window.getScore().tracksModified(false);
     }
@@ -644,4 +622,34 @@ public class ObjectPropertiesPanel extends ColumnContainer
   {
     return new Dimension();
   }
+  
+  private static List<String> getMaterialsTypeNames() 
+  {
+ 
+    List<String> names = new ArrayList<>();
+    for(Material material: PluginRegistry.getPlugins(Material.class)){
+      try {
+        Method mtd = material.getClass().getMethod("getTypeName");
+        names.add(Translate.text("newMaterialOfType", mtd.invoke(null)));
+      } catch(Exception ex) {}
+    }
+    return names;
+  }
+  
+  private final List<String> materialTypeNames = List.copyOf(getMaterialsTypeNames());
+  
+  private static List<String> getTexturesTypeNames() 
+  {
+ 
+    List<String> names = new ArrayList<>();
+    for(Texture texture: PluginRegistry.getPlugins(Texture.class)){
+      try {
+        Method mtd = texture.getClass().getMethod("getTypeName");
+        names.add(Translate.text("newTextureOfType", mtd.invoke(null)));
+      } catch(Exception ex) {}
+    }
+    return names;
+  }
+  
+  private final List<String> textureTypeNames = List.copyOf(getTexturesTypeNames());
 }

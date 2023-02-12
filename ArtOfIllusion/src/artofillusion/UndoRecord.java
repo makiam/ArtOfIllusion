@@ -22,6 +22,8 @@ import java.lang.ref.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** The UndoRecord class records a series of commands, allowing the user to undo a previous
     action. */
@@ -69,6 +71,7 @@ public class UndoRecord
     redo = isRedo;
     command = new ArrayList<>();
     data = new ArrayList<>();
+    
   }
 
   /**
@@ -112,6 +115,7 @@ public class UndoRecord
   {
     command.add(theCommand);
     data.add(commandData);
+    System.out.println("Add command: " + theCommand);
   }
 
   /**
@@ -323,6 +327,7 @@ public class UndoRecord
     return redoRecord;
   }
 
+  private static final Logger logger = Logger.getLogger(UndoRecord.class.getName());
   /**
    * Cache the data in this record to disk, allowing it to potentially be unloaded from memory.
    */

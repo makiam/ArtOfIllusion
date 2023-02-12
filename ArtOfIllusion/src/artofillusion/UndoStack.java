@@ -18,8 +18,8 @@ import java.util.*;
 
 public class UndoStack
 {
-    private final LinkedList<UndoRecord> undoList = new LinkedList<>();
-    private final LinkedList<UndoRecord> redoList = new LinkedList<>();
+    private final LinkedList<UndoRecord> undoList = new ObservableList("Undo List");
+    private final LinkedList<UndoRecord> redoList = new ObservableList("Redo List");
 
   /**
    * Determine whether there are any undo records available, so that an Undo command
@@ -28,9 +28,10 @@ public class UndoStack
 
   public boolean canUndo()
   {
-    return !undoList.isEmpty();
+    boolean result =!undoList.isEmpty();
+    return result;
   }
-
+  
   /**
    * Determine whether there are any redo records available, so that a Redo command
    * could be executed.
@@ -38,7 +39,8 @@ public class UndoStack
 
   public boolean canRedo()
   {
-    return !redoList.isEmpty();
+    boolean result = !redoList.isEmpty();
+    return result;
   }
 
   /**

@@ -589,6 +589,7 @@ public class Scene
 
   public void removeTexture(int which)
   {
+    
     Texture tex = textures.elementAt(which);
 
     textures.removeElementAt(which);
