@@ -80,13 +80,13 @@ public class ObjectPropertiesPanel extends ColumnContainer
         if (obj instanceof Texture)
         {
           Texture tex = (Texture) obj;
-          UndoableEdit action = new SceneUndoableEdit(() -> scene.addTexture(tex, index), () -> scene.removeTexture(index)).setName("Add Texture");
+          UndoableEdit action = new AddTextureEdit(scene, tex, index);
           window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
         }
         else
         {
           Material mat = (Material) obj;
-          UndoableEdit action = new SceneUndoableEdit(() -> scene.addMaterial(mat, index), () -> scene.removeMaterial(index)).setName("Add Material");
+          UndoableEdit action = new AddMaterialEdit(scene, mat, index);
           window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
         }
       }

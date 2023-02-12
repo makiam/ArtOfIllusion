@@ -843,7 +843,7 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
       logger.log(Level.INFO, "Texture added: {0}", index);
       Texture tex = (Texture) obj;
       texList.add(index, tex.getName());
-      UndoableEdit action = new SceneUndoableEdit(() -> scene.addTexture(tex, index), () -> scene.removeTexture(index)).setName("Add Texture");
+      UndoableEdit action = new AddTextureEdit(scene, tex, index);
       window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
     }
     else
@@ -851,7 +851,7 @@ public class ObjectTextureDialog extends BDialog implements ListChangeListener
       Material mat = (Material) obj;
       int mIndex = index+1;
       matList.add(mIndex, mat.getName());
-      UndoableEdit action = new SceneUndoableEdit(() -> scene.addMaterial(mat, mIndex), () -> scene.removeMaterial(mIndex)).setName("Add Material");
+      UndoableEdit action = new AddMaterialEdit(scene, mat, index);
       window.setUndoRecord(new UndoRecord(window, false, UndoRecord.USER_DEFINED_ACTION, action));
     }
   }

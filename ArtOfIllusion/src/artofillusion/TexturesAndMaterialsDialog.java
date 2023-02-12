@@ -65,13 +65,13 @@ public class TexturesAndMaterialsDialog extends BDialog
         if (obj instanceof Texture)
         {
           Texture tex = (Texture) obj;
-          UndoableEdit action = new SceneUndoableEdit(() -> theScene.addTexture(tex, index), () -> theScene.removeTexture(index)).setName("Add Texture");
+          UndoableEdit action = new AddTextureEdit(theScene, tex, index);
           parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
         }
         else
         {
           Material mat = (Material) obj;
-          UndoableEdit action = new SceneUndoableEdit(() -> theScene.addMaterial(mat, index), () -> theScene.removeMaterial(index)).setName("Add Material");
+          UndoableEdit action = new AddMaterialEdit(theScene, mat, index);
           parentFrame.setUndoRecord(new UndoRecord(parentFrame, false, UndoRecord.USER_DEFINED_ACTION, action));
         }
     }

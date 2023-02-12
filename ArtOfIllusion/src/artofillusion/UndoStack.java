@@ -18,7 +18,7 @@ import java.util.*;
 
 public class UndoStack
 {
-    private final LinkedList<UndoRecord> undoList = new ObservableList("Undo List");
+    private final LinkedList<UndoRecord> undoList = new LinkedList<>();
     private final LinkedList<UndoRecord> redoList = new ObservableList("Redo List");
 
   /**
@@ -49,6 +49,7 @@ public class UndoStack
 
   public void addRecord(UndoRecord record)
   {
+    System.out.println("Undo Stack add record");
     int levels = ArtOfIllusion.getPreferences().getUndoLevels();
     if (levels < 1)
       levels = 1;
@@ -77,9 +78,11 @@ public class UndoStack
 
   public void executeRedo()
   {
+    System.out.println("Before Execure redo: " + redoList.size());
     if (redoList.isEmpty())
       return;
     UndoRecord record = redoList.removeLast();
+    System.out.println("After Execure redo: " + redoList.size());
     undoList.add(record.execute());
   }
   

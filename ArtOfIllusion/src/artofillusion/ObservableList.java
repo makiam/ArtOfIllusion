@@ -1,7 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+/* Copyright (C) 2023 by Maksim Khramov
+
+   This program is free software; you can redistribute it and/or modify it under the
+   terms of the GNU General Public License as published by the Free Software
+   Foundation; either version 2 of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+   PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
 package artofillusion;
 
 import java.util.LinkedList;
@@ -30,17 +35,27 @@ public class ObservableList extends LinkedList<UndoRecord>
   }
 
   @Override
-  public void addFirst(UndoRecord e)
+  public void addFirst(UndoRecord element)
   {
-    super.addFirst(e); 
+    super.addFirst(element); 
+    logger.log(Level.INFO , "Add first {0} to {1}", new Object[] {element, name});
   }
 
   @Override
   public UndoRecord removeLast()
   {
     UndoRecord rec = super.removeLast(); 
-    logger.log(Level.INFO , "Remove Last {0} from {1}", new Object[] {rec, name});
+    logger.log(Level.INFO , "Remove Last {0} from {1} left {2}", new Object[] {rec, name, this.size()});
     return rec;
   }
+
+  @Override
+  public UndoRecord removeFirst()
+  {
+    UndoRecord rec = super.removeFirst();
+    logger.log(Level.INFO , "Remove First {0} from {1} left {2}", new Object[] {rec, name, this.size()});
+    return rec;
+  }
+  
   
 }

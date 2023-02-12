@@ -115,7 +115,7 @@ public class UndoRecord
   {
     command.add(theCommand);
     data.add(commandData);
-    System.out.println("Add command: " + theCommand);
+
   }
 
   /**
@@ -310,6 +310,7 @@ public class UndoRecord
           case USER_DEFINED_ACTION:
             {
                 UndoableEdit edit = (UndoableEdit) d[0];
+                System.out.println("Execute Edit " + edit.getClass().getSimpleName() + " -> " + edit.getName());
                 if(redo) {
                     edit.redo();
                 } else {
