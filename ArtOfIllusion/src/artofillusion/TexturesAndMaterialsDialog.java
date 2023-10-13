@@ -522,9 +522,8 @@ public class TexturesAndMaterialsDialog extends BDialog
       Texture newTexture = selectedTexture.duplicate();
       theScene.addTexture(newTexture, insertLocation == -1 ? theScene.getNumTextures() : insertLocation);
       parentFrame.setModified();
-      for (int i = 0; i < selectedScene.getNumImages(); i++)
+      for (ImageMap image: selectedScene.getImages())
       {
-        ImageMap image = selectedScene.getImage(i);
         if (selectedTexture.usesImage(image))
         {
           theScene.addImage(image);
@@ -538,9 +537,8 @@ public class TexturesAndMaterialsDialog extends BDialog
       Material newMaterial = selectedMaterial.duplicate();
       theScene.addMaterial(newMaterial, insertLocation == -1 ? theScene.getNumMaterials() : insertLocation);
       parentFrame.setModified();
-      for (int i = 0; i < selectedScene.getNumImages(); i++)
+      for (ImageMap image: selectedScene.getImages())
       {
-        ImageMap image = selectedScene.getImage(i);
         if (selectedMaterial.usesImage(image))
         {
           theScene.addImage(image);
@@ -582,9 +580,8 @@ public class TexturesAndMaterialsDialog extends BDialog
         {
           Texture newTexture = selectedTexture.duplicate();
           saveScene.addTexture(newTexture, insertLocation == -1 ? saveScene.getNumTextures() : insertLocation);
-          for (int i = 0; i < selectedScene.getNumImages(); i++)
+          for (ImageMap image: selectedScene.getImages())
           {
-            ImageMap image = selectedScene.getImage(i);
             if (selectedTexture.usesImage(image))
               saveScene.addImage(image);
           }
@@ -594,9 +591,8 @@ public class TexturesAndMaterialsDialog extends BDialog
         {
           Material newMaterial = selectedMaterial.duplicate();
           saveScene.addMaterial(newMaterial, insertLocation == -1 ? saveScene.getNumMaterials() : insertLocation);
-          for (int i = 0; i < selectedScene.getNumImages(); i++)
+          for (ImageMap image: selectedScene.getImages())
           {
-            ImageMap image = selectedScene.getImage(i);
             if (selectedMaterial.usesImage(image))
               saveScene.addImage(image);
           }

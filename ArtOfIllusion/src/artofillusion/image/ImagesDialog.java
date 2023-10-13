@@ -135,21 +135,17 @@ public class ImagesDialog extends BDialog
   private void hilightButtons()
   {
     b[2].setEnabled(selection >= 0); // open details
-    boolean exts = false;
-    for(int i = 0; i < theScene.getNumImages(); i++)
-      if (theScene.getImage(i) instanceof ExternalImage)
-        exts = true;
-    b[3].setEnabled(exts); // refresh
+    java.util.List<ImageMap> images = theScene.getImages();
+    b[3].setEnabled(images.stream().anyMatch(imageMap -> imageMap instanceof ExternalImage)); // refresh
     b[4].setEnabled(selection >= 0); // delete
-    b[5].setEnabled(theScene.getNumImages() > 0); // purge
+    b[5].setEnabled(images.size() > 0); // purge
     b[6].setEnabled(selection >= 0); // select none
   }
 
   private void doRefresh()
   {
-    for(int i = 0; i < theScene.getNumImages(); i++)
+    for(ImageMap imap: theScene.getImages())
     {
-      ImageMap imap = theScene.getImage(i);
       if (imap instanceof ExternalImage)
       {
         ((ExternalImage)imap).refreshImage();
@@ -182,7 +178,7 @@ public class ImagesDialog extends BDialog
       }
     }
     setCursor(Cursor.getDefaultCursor());
-    selection = theScene.getNumImages()-1;
+    selection = theScene.getImages().size()-1;
     ic.imagesChanged();
     hilightButtons();
     setModified();
@@ -648,9 +644,8 @@ public class ImagesDialog extends BDialog
     private void addUnusedImagesTable(boolean intent) // intent = to delete or not
     {
       unusedImages = new ArrayList<>();
-      for (int i = 0; i < theScene.getNumImages(); i++)
+      for (ImageMap im: theScene.getImages())
       {
-        ImageMap im = theScene.getImage(i);
         if(theScene.getTextures().stream().anyMatch(texture -> texture.usesImage(im))) continue;
         unusedImages.add(im);
       }
