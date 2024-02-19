@@ -50,7 +50,6 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   int view;
   double startTime;
   double timeScale;
-  int yoffset;
   private boolean[] hasRepaintedView;
   private boolean isAnimating;
   private long animateStartClockTime;
@@ -704,7 +703,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
       return;
     theList.setYOffset(-pos);
     for (TrackDisplay graph : graphs) graph.setYOffset(-pos);
-    yoffset = -pos;
+
     theList.repaint();
     repaintGraphs();
     scrollPos = pos;
