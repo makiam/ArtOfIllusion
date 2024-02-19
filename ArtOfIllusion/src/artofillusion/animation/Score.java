@@ -177,13 +177,13 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     boolean enable = false;
     boolean disable = false;
 
-    for (int i = 0; i < selTrack.length; i++)
-      {
-        if (selTrack[i].isEnabled())
-          disable = true;
+    for (Track track : selTrack) {
+        if (track.isEnabled())
+            disable = true;
         else
-          enable = true;
-      }
+            enable = true;
+    }
+
     popupMenuItem[0].setEnabled(selTrack.length == 1); // Edit Track
     popupMenuItem[1].setEnabled(selTrack.length > 0); // Duplicate Tracks
     popupMenuItem[2].setEnabled(selTrack.length > 0); // Delete Tracks
@@ -231,8 +231,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   public void setSelectedKeyframes(SelectionInfo[] sel)
   {
     selection = sel;
-    for (int i = 0; i < graphs.size(); i++)
-      ((Widget) graphs.get(i)).repaint();
+    for (TrackDisplay graph : graphs) ((Widget) graph).repaint();
     window.updateMenus();
   }
 
@@ -270,9 +269,10 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     List<SelectionInfo> v = new Vector<>();
 
-    for (int i = 0; i < selection.length; i++)
-      if (selection[i].key != key)
-        v.add(selection[i]);
+    for (SelectionInfo selectionInfo : selection) {
+        if (selectionInfo.key == key) continue;
+        v.add(selectionInfo);
+    }
     selection = new SelectionInfo [v.size()];
     for (int i = 0; i < selection.length; i++)
       selection[i] = v.get(i);
@@ -283,9 +283,9 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public boolean isKeyframeSelected(Keyframe k)
   {
-    for (int i = 0; i < selection.length; i++)
-      if (selection[i].key == k)
-        return true;
+    for (SelectionInfo selectionInfo : selection)
+        if (selectionInfo.key == k)
+            return true;
     return false;
   }
 
@@ -703,8 +703,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     if (pos == scrollPos)
       return;
     theList.setYOffset(-pos);
-    for (int i = 0; i < graphs.size(); i++)
-      graphs.get(i).setYOffset(-pos);
+    for (TrackDisplay graph : graphs) graph.setYOffset(-pos);
     yoffset = -pos;
     theList.repaint();
     repaintGraphs();
@@ -941,13 +940,12 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
         }
     window.setUndoRecord(undo);
     rebuildList();
-    for (int i = 0; i < addedTrack.size(); i++)
-      {
-        TreeElement el = theList.findElement(addedTrack.get(i));
+    for (Track track : addedTrack) {
+        TreeElement el = theList.findElement(track);
         if (el == null)
-          continue;
+            continue;
         el.setSelected(true);
-      }
+    }
     repaintGraphs();
   }
 
@@ -1181,8 +1179,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     if (mode != modeTools.getSelection())
       {
         mode = modeTools.getSelection();
-        for (int i = 0; i < graphs.size(); i++)
-          graphs.get(i).setMode(mode);
+        for (TrackDisplay graph : graphs) graph.setMode(mode);
         setHelpText(MODE_HELP_TEXT[mode]);
       }
   }
