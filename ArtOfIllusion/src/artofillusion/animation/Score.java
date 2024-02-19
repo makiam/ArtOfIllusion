@@ -37,25 +37,33 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   TimeAxis theAxis;
   private final List<TrackDisplay> graphs;
   BScrollBar scroll;
-  ToolPalette viewTools, modeTools;
+  ToolPalette viewTools;
+  ToolPalette modeTools;
   BLabel helpText;
   BSplitPane div;
   BPopupMenu popupMenu;
   BMenuItem[] popupMenuItem;
   Marker timeMarker;
   private SelectionInfo[] selection;
-  int scrollPos, mode, view;
-  double startTime, timeScale;
+  int scrollPos;
+  int mode;
+  int view;
+  double startTime;
+  double timeScale;
   int yoffset;
   private boolean[] hasRepaintedView;
   private boolean isAnimating;
   private long animateStartClockTime;
   private double animateStartSceneTime;
   private double playbackSpeed;
-  private final BButton playButton, rewindButton, endButton;
+  private final BButton playButton;
+  private final BButton rewindButton;
+  private final BButton endButton;
   private final BSlider speedSlider;
-  private final BLabel speedLabel, timeFrameLabel;
-  private final ImageIcon playIcon, stopIcon;
+  private final BLabel speedLabel;
+  private final BLabel timeFrameLabel;
+  private final ImageIcon playIcon;
+  private final ImageIcon stopIcon;
 
   public static final int TRACKS_MODE = 0;
   public static final int SINGLE_GRAPH_MODE = 1;
@@ -166,7 +174,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   public void showPopupMenu(Widget w, int x, int y)
   {
     Track[] selTrack = getSelectedTracks();
-    boolean enable = false, disable = false;
+    boolean enable = false;
+    boolean disable = false;
 
     for (int i = 0; i < selTrack.length; i++)
       {
@@ -200,7 +209,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   /** Get the currently selected tracks. */
 
-  public Track [] getSelectedTracks()
+  public Track[] getSelectedTracks()
   {
     Object[] obj = theList.getSelectedObjects();
     Track[] tr = new Track [obj.length];
@@ -231,8 +240,9 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void addSelectedKeyframes(SelectionInfo[] newsel)
   {
-    List<SelectionInfo> v = new Vector<SelectionInfo>();
-    int i, j;
+    List<SelectionInfo> v = new Vector<>();
+    int i;
+    int j;
 
     for (i = 0; i < selection.length; i++)
       v.add(selection[i]);
@@ -258,7 +268,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void removeSelectedKeyframe(Keyframe key)
   {
-    List<SelectionInfo> v = new Vector<SelectionInfo>();
+    List<SelectionInfo> v = new Vector<>();
 
     for (int i = 0; i < selection.length; i++)
       if (selection[i].key != key)
@@ -437,8 +447,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   public void setScale(double s)
   {
     theAxis.setScale(s);
-    for (int i = 0; i < graphs.size(); i++)
-      ((TrackDisplay) graphs.get(i)).setScale(s);
+    graphs.forEach(gr -> gr.setScale(s));
     timeScale = s;
     repaintGraphs();
   }
@@ -570,19 +579,19 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   private void selectedTracksChanged()
   {
-    Vector v = new Vector();
+    Vector<SelectionInfo> v = new Vector<>();
     Track[] sel = getSelectedTracks();
 
     for (int i = 0; i < selection.length; i++)
       for (int j = 0; j < sel.length; j++)
         if (selection[i].track == sel[j])
           {
-            v.addElement(selection[i]);
+            v.add(selection[i]);
             break;
           }
     selection = new SelectionInfo [v.size()];
     for (int i = 0; i < selection.length; i++)
-      selection[i] = (SelectionInfo) v.elementAt(i);
+      selection[i] = v.get(i);
     if (view == SINGLE_GRAPH_MODE)
       {
         ((TrackGraph) graphs.get(0)).setTracks(sel);
@@ -610,7 +619,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
     // Find the list of tracks with selected keyframes.
 
-    List<Track> v = new Vector<Track>();
+    List<Track> v = new Vector<>();
     for (int i = 0; i < selection.length; i++)
       if (!v.contains(selection[i].track))
         v.add(selection[i].track);
@@ -714,7 +723,9 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   private void updateScrollbar()
   {
-    int height = theList.getPreferredSize().height, showing = theList.getBounds().height;
+    int height = theList.getPreferredSize().height;
+    int showing = theList.getBounds().height;
+
     scroll.setMaximum(height);
     scroll.setExtent(showing);
     scroll.setValue(scrollPos);
@@ -777,7 +788,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     Object[] sel = theList.getSelectedObjects();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector v = new Vector();
+    Vector<ObjectInfo> owners = new Vector<>();
 
     for (int i = 0; i < sel.length; i++)
       if (sel[i] instanceof Track)
@@ -786,15 +797,14 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
           Object parent = tr.getParent();
           while (parent instanceof Track)
             parent = ((Track) parent).getParent();
-          if (parent instanceof ObjectInfo && v.indexOf(parent) == -1)
+          if (parent instanceof ObjectInfo && owners.indexOf(parent) == -1)
             {
-              v.addElement(parent);
+              owners.add((ObjectInfo)parent);
               undo.addCommand(UndoRecord.COPY_OBJECT_INFO, parent, ((ObjectInfo) parent).duplicate());
             }
           tr.setEnabled(enable);
         }
-    for (int i = 0; i < v.size(); i++)
-      window.getScene().applyTracksToObject((ObjectInfo) v.elementAt(i));
+    owners.forEach(owner -> window.getScene().applyTracksToObject(owner));
     theList.repaint();
     window.setUndoRecord(undo);
     window.updateImage();
@@ -809,7 +819,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     Object[] sel = theList.getSelectedObjects();
     double time = theScene.getTime();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector newkeys = new Vector();
+    Vector<SelectionInfo> newkeys = new Vector<>();
 
     for (int i = 0; i < sel.length; i++)
       if (sel[i] instanceof Track)
@@ -824,7 +834,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
             }
           Keyframe k = tr.setKeyframe(time, theScene);
           if (k != null)
-            newkeys.addElement(new SelectionInfo(tr, k));
+            newkeys.add(new SelectionInfo(tr, k));
         }
     window.setUndoRecord(undo);
     if (newkeys.size() > 0)
@@ -846,13 +856,17 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     int[] sel = window.getSelectedIndices();
     double time = theScene.getTime();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector newkeys = new Vector();
+    Vector<SelectionInfo> newkeys = new Vector<>();
 
     for (int i = 0; i < sel.length; i++)
       {
         ObjectInfo info = theScene.getObject(sel[i]);
-        boolean posx = false, posy = false, posz = false;
-        boolean rotx = false, roty = false, rotz = false;
+        boolean posx = false;
+        boolean posy = false;
+        boolean posz = false;
+        boolean rotx = false;
+        boolean roty = false;
+        boolean rotz = false;
         for (int j = 0; j < info.getTracks().length; j++)
           {
             Track tr = info.getTracks()[j];
@@ -866,7 +880,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
             Keyframe k = tr.setKeyframeIfModified(time, theScene);
             if (k != null)
               {
-                newkeys.addElement(new SelectionInfo(tr, k));
+                newkeys.add(new SelectionInfo(tr, k));
                 if (tr instanceof PositionTrack)
                   {
                     PositionTrack pt = (PositionTrack) tr;
@@ -902,8 +916,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     Object[] sel = theList.getSelectedObjects();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector modifiedObj = new Vector(), addedTrack = new Vector();
-
+    Vector<ObjectInfo> modifiedObj = new Vector<>();
+    Vector<Track> addedTrack = new Vector<>();
     for (int i = 0; i < sel.length; i++)
       if (sel[i] instanceof Track)
         {
@@ -914,7 +928,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
           if (modifiedObj.indexOf(info) < 0)
             {
               undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
-              modifiedObj.addElement(info);
+              modifiedObj.add(info);
             }
           for (int j = 0; j < info.getTracks().length; j++)
             if (info.getTracks()[j] == tr)
@@ -922,14 +936,14 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
                 Track newtr = tr.duplicate(info);
                 newtr.setName("Copy of "+tr.getName());
                 info.addTrack(newtr, j+1);
-                addedTrack.addElement(newtr);
+                addedTrack.add(newtr);
               }
         }
     window.setUndoRecord(undo);
     rebuildList();
     for (int i = 0; i < addedTrack.size(); i++)
       {
-        TreeElement el = theList.findElement(addedTrack.elementAt(i));
+        TreeElement el = theList.findElement(addedTrack.get(i));
         if (el == null)
           continue;
         el.setSelected(true);
@@ -943,7 +957,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     Object[] sel = theList.getSelectedObjects();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector modifiedObj = new Vector();
+    Vector<ObjectInfo> modifiedObj = new Vector<>();
 
     for (int i = 0; i < sel.length; i++)
       if (sel[i] instanceof Track)
@@ -955,7 +969,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
           if (modifiedObj.indexOf(info) < 0)
             {
               undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
-              modifiedObj.addElement(info);
+              modifiedObj.add(info);
             }
           info.removeTrack(tr);
         }
@@ -987,11 +1001,11 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   /** Add a track to the specified objects. */
 
-  public void addTrack(Object[] obj, Class trackClass, Object[] extraArgs, boolean deselectOthers)
+  public void addTrack(Object[] obj, Class<? extends Track> trackClass, Object[] extraArgs, boolean deselectOthers)
   {
     Scene theScene = window.getScene();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector<Track> added = new Vector<Track>();
+    Vector<Track> added = new Vector<>();
     Object[] args;
     if (extraArgs == null)
       args = new Object [1];
@@ -1060,7 +1074,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void deleteSelectedKeyframes()
   {
-    Hashtable changedTracks = new Hashtable();
+    Hashtable<Track, Track> changedTracks = new Hashtable<>();
     for (int i = 0; i < selection.length; i++)
       {
         Track tr = selection[i].track;
@@ -1076,10 +1090,10 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
       }
     selection = new SelectionInfo [0];
     UndoRecord undo = new UndoRecord(window, false);
-    Enumeration tracks = changedTracks.keys();
+    Enumeration<Track> tracks = changedTracks.keys();
     while (tracks.hasMoreElements())
       {
-        Track tr = (Track) tracks.nextElement();
+        Track tr = tracks.nextElement();
         Object parent = tr.getParent();
         while (parent != null && parent instanceof Track)
           parent = ((Track) parent).getParent();
@@ -1105,7 +1119,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     // Find the earliest keyframe on any track of any object.
 
     double minTime = Math.min(0.0, window.getScene().getTime());
-    for (ObjectInfo obj : window.getScene().getAllObjects())
+    for (ObjectInfo obj : window.getScene().getObjects())
     {
       for (Track track : obj.getTracks())
       {
@@ -1123,7 +1137,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     // Find the latest keyframe on any track of any object.
 
     double maxTime = Math.max(0.0, window.getScene().getTime());
-    for (ObjectInfo obj : window.getScene().getAllObjects())
+    for (ObjectInfo obj : window.getScene().getObjects())
     {
       for (Track track : obj.getTracks())
       {
