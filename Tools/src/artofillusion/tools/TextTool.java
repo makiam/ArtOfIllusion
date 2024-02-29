@@ -21,19 +21,16 @@ import java.awt.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * TextTool creates meshes or curves that represent text.
  */
 public class TextTool implements ModellingTool
 {
-  public static enum TextType {Outline, Tube, Surface, Solid}
+  public enum TextType {Outline, Tube, Surface, Solid}
 
-  public TextTool()
-  {
-  }
-
-  /** Get the text that appear as the menu item.*/
+  /** Get the text that appears as the menu item.*/
 
   @Override
   public String getName()
@@ -63,7 +60,7 @@ public class TextTool implements ModellingTool
    */
   public static ArrayList<ObjectInfo> createText(String text, String fontName, TextType type, boolean bold, boolean italic, double thickness, Texture texture)
   {
-    ArrayList<ObjectInfo> objects = new ArrayList<ObjectInfo>();
+    List<ObjectInfo> objects = new ArrayList<>();
     int style = Font.PLAIN;
     if (bold)
       style |= Font.BOLD;
@@ -77,17 +74,17 @@ public class TextTool implements ModellingTool
       GlyphVector glyphVector = font.createGlyphVector(new FontRenderContext(null, true, true), text);
       for (int glyphIndex = 0; glyphIndex < glyphVector.getNumGlyphs(); glyphIndex++)
       {
-        float segmentCoords[] = new float[6];
-        ArrayList<Vec3> points = new ArrayList<Vec3>();
-        ArrayList<Float> smoothnesses = new ArrayList<Float>();
+        float[] segmentCoords = new float[6];
+        List<Vec3> points = new ArrayList<>();
+        List<Float> smoothnesses = new ArrayList<>();
         boolean firstCurveOfGlyph = true;
         String glyphName = Character.toString(text.charAt(glyphVector.getGlyphCharIndex(glyphIndex)));
         ObjectInfo fullLetterOI = null;
 
         // Loop over all segments in the outline of the current glyph and process them.
 
-        Shape currentOutline = glyphVector.getGlyphOutline(glyphIndex);
-        PathIterator pathIterator = currentOutline.getPathIterator(null);
+
+        PathIterator pathIterator = glyphVector.getGlyphOutline(glyphIndex).getPathIterator(null);
         while (!pathIterator.isDone())
         {
           switch(pathIterator.currentSegment(segmentCoords))
@@ -125,9 +122,10 @@ public class TextTool implements ModellingTool
                 smoothnesses.remove(smoothnesses.size()-1);
               }
               // Convert the ArrayLists into arrays
-              float smoothnessesArray[] = new float[smoothnesses.size()];
+              float[] smoothnessesArray = new float[smoothnesses.size()];
               for (int i = 0; i < smoothnesses.size(); i++)
                 smoothnessesArray[i] = smoothnesses.get(i);
+
               Curve theCurve = new Curve(points.toArray(new Vec3[points.size()]), smoothnessesArray, Mesh.APPROXIMATING, true);
               ObjectInfo currentGlyphOI = new ObjectInfo(theCurve, new CoordinateSystem(), glyphName);
               currentGlyphOI.setTexture(texture, texture.getDefaultMapping(currentGlyphOI.object));
@@ -223,7 +221,7 @@ public class TextTool implements ModellingTool
               }
               else if (type == TextType.Tube)
               {
-                double tubeThickness[] = new double[theCurve.getVertices().length];
+                double[] tubeThickness = new double[theCurve.getVertices().length];
                 Arrays.fill(tubeThickness, thickness);
                 Tube theTube = new Tube(theCurve, tubeThickness, Tube.CLOSED_ENDS);
                 theTube.setTexture(texture, texture.getDefaultMapping(theTube));
@@ -234,8 +232,8 @@ public class TextTool implements ModellingTool
                 // User wants only the curves
                 objects.add(currentGlyphOI);
               }
-              points = new ArrayList<Vec3>();
-              smoothnesses = new ArrayList<Float>();
+              points = new ArrayList<>();
+              smoothnesses = new ArrayList<>();
           } // Segments loop
           pathIterator.next();
         } // Curves loop
@@ -243,7 +241,7 @@ public class TextTool implements ModellingTool
         {
           if (type == TextType.Surface || type == TextType.Solid)
           {
-            boolean selection[] = new boolean [((TriangleMesh) fullLetterOI.getObject()).getEdges().length];
+            boolean[] selection = new boolean [((TriangleMesh) fullLetterOI.getObject()).getEdges().length];
             Arrays.fill(selection, true);
             new TriMeshSimplifier((TriangleMesh) fullLetterOI.getObject(), selection, 1e-6, null);
             try
@@ -291,22 +289,22 @@ public class TextTool implements ModellingTool
     {
       ex.printStackTrace();
     }
-    return objects;
+    return (ArrayList<ObjectInfo>)objects;
   }
 
   private static TriangleMesh solidify(TriangleMesh mesh, double thickness)
   {
-    MeshVertex vert[] = mesh.getVertices();
-    Vec3 norm[] = mesh.getNormals();
+    MeshVertex[] vert = mesh.getVertices();
+    Vec3[] norm = mesh.getNormals();
 
     // Duplicate and outset the vertices.
 
-    TriangleMesh.Vertex newVert[] = new TriangleMesh.Vertex [vert.length*2];
-    double offset = 0.5*thickness;
+    TriangleMesh.Vertex[] newVert = new TriangleMesh.Vertex[vert.length * 2];
+    double offset = 0.5 * thickness;
     for (Vec3 n : norm)
       if (n.z != 0.0)
       {
-        offset = 0.5*thickness*n.z;
+        offset = 0.5 * thickness * n.z;
         break;
       }
     for (int i = 0; i < vert.length; i++)
@@ -319,7 +317,7 @@ public class TextTool implements ModellingTool
 
     // Count the boundary edges.
 
-    TriangleMesh.Edge edge[] = mesh.getEdges();
+    TriangleMesh.Edge[] edge = mesh.getEdges();
     int numBoundary = 0;
     for (TriangleMesh.Edge e : edge)
       if (e.f2 == -1)
@@ -327,8 +325,8 @@ public class TextTool implements ModellingTool
 
     // Duplicate the faces.
 
-    TriangleMesh.Face face[] = mesh.getFaces();
-    int newFace[][] = new int [face.length*2+numBoundary*2][3];
+    TriangleMesh.Face[] face = mesh.getFaces();
+    int[][] newFace = new int[face.length * 2 + numBoundary * 2][3];
     for (int i = 0; i < face.length; i++)
     {
       newFace[i][0] = face[i].v1;
@@ -341,7 +339,7 @@ public class TextTool implements ModellingTool
 
     // Add faces around the boundary.
 
-    for (int i = 0, j = face.length*2; i < edge.length; i++)
+    for (int i = 0, j = face.length * 2; i < edge.length; i++)
     {
       if (edge[i].f2 == -1)
       {
@@ -361,8 +359,8 @@ public class TextTool implements ModellingTool
 
     // Copy the edge smoothness values over.
 
-    TriangleMesh.Face newf[] = newMesh.getFaces();
-    TriangleMesh.Edge newe[] = newMesh.getEdges();
+    TriangleMesh.Face[] newf = newMesh.getFaces();
+    TriangleMesh.Edge[] newe = newMesh.getEdges();
     for (int i = 0; i < face.length; i++)
     {
       newe[newf[i].e1].smoothness = edge[face[i].e1].smoothness;
