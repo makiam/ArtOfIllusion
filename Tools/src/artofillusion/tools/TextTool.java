@@ -45,7 +45,18 @@ public class TextTool implements ModellingTool
   {
     new TextDialog(window);
   }
+   
+  public static List<Shape> getShapes(String text, Font font) {
+    FontRenderContext frc = new FontRenderContext(null, true, true);
+    GlyphVector glyphVector = font.createGlyphVector(frc, text);
 
+    java.util.List<Shape> shapes = new ArrayList<>();
+    for (int glyphIndex = 0; glyphIndex < glyphVector.getNumGlyphs(); glyphIndex++) {
+      shapes.add(glyphVector.getGlyphOutline(glyphIndex));
+    }
+    return shapes;
+  }
+   
   /**
    * Create a set of objects that represent a line of text.
    *
