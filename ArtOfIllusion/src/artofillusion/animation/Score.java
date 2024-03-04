@@ -45,7 +45,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   BPopupMenu popupMenu;
   BMenuItem[] popupMenuItem;
   Marker timeMarker;
-  private SelectionInfo[] selection;
+  private SelectionInfo[] selection = new SelectionInfo[0];
   int scrollPos;
   int mode;
   int view;
@@ -62,8 +62,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   private final BSlider speedSlider;
   private final BLabel speedLabel;
   private final BLabel timeFrameLabel;
-  private final ImageIcon playIcon;
-  private final ImageIcon stopIcon;
+  private final ImageIcon playIcon = ThemeManager.getIcon("play");
+  private final ImageIcon stopIcon = ThemeManager.getIcon("stop");
 
   public static final int TRACKS_MODE = 0;
   public static final int SINGLE_GRAPH_MODE = 1;
@@ -81,8 +81,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   public Score(LayoutWindow win)
   {
     window = win;
-    playIcon = ThemeManager.getIcon("play");
-    stopIcon = ThemeManager.getIcon("stop");
+
+
     playButton = new BButton(playIcon);
     rewindButton = new BButton(ThemeManager.getIcon("rewind"));
     endButton = new BButton(ThemeManager.getIcon("forward"));
@@ -115,10 +115,10 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     theList.addEventLink(TreeList.ElementDoubleClickedEvent.class, this, "elementDoubleClicked");
     theList.addEventLink(SelectionChangedEvent.class, this, "treeSelectionChanged");
     theList.setPopupMenuManager(this);
-    selection = new SelectionInfo [0];
-    int fps = window.getScene().getFramesPerSecond();
-    timeScale = fps*5.0;
-    theAxis = new TimeAxis(fps, timeScale, this);
+
+
+    timeScale = window.getScene().getFramesPerSecond() * 5.0;
+    theAxis = new TimeAxis(window.getScene().getFramesPerSecond(), timeScale, this);
     graphs = new Vector<>();
     timeMarker = new Marker(window.getScene().getTime(), Translate.text("Time"), Color.green);
     theAxis.addMarker(timeMarker);
