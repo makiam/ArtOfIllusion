@@ -996,6 +996,12 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     selectedTracksChanged();
     window.updateMenus();
   }
+
+  public Constructor getTrackConstructor(Class<? extends Track> clazz, int argsCount)
+  {
+    Constructor[] con = clazz.getConstructors();
+    return Arrays.stream(con).filter(c -> c.getParameterTypes().length == argsCount).findFirst().orElse(con[0]);
+  }
    
   public static List<ObjectInfo> filterTargets(Object[] obj)
   {
@@ -1013,13 +1019,15 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
       args = new Object [1];
     else
       {
-        args = new Object [extraArgs.length+1];
+        args = new Object[extraArgs.length + 1];
         for (int i = 0; i < extraArgs.length; i++)
-          args[i+1] = extraArgs[i];
+          args[i + 1] = extraArgs[i];
       }
     Constructor[] con = trackClass.getConstructors();
     int which;
     for (which = 0; which < con.length && con[which].getParameterTypes().length != args.length; which++);
+    Constructor match = con[which];
+     
     try
       {
         for (int i = 0; i < obj.length; i++)
@@ -1043,7 +1051,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
                 }
               undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
               args[0] = info;
-              Track newtrack = (Track) con[which].newInstance(args);
+              Track newtrack = (Track) match.newInstance(args);
               info.addTrack(newtrack, 0);
               added.add(newtrack);
             }
