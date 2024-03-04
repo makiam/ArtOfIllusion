@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /** This is a Widget which displays all the tracks for objects in a scene, and shows
     where their keyframes are. */
@@ -995,9 +996,13 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     selectedTracksChanged();
     window.updateMenus();
   }
-
+   
+  public static List<ObjectInfo> filterTargets(Object[] obj)
+  {
+    return Arrays.stream(obj).filter(o -> o instanceof ObjectInfo).map(ObjectInfo.class::cast).collect(Collectors.toList());
+  }
+   
   /** Add a track to the specified objects. */
-
   public void addTrack(Object[] obj, Class<? extends Track> trackClass, Object[] extraArgs, boolean deselectOthers)
   {
     Scene theScene = window.getScene();
