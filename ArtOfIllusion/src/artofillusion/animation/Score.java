@@ -503,8 +503,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
           }
         }
       };
-      for (ViewerCanvas view : window.getAllViews())
-        view.addEventLink(RepaintEvent.class, listener, "viewRepainted");
+      for (ViewerCanvas сView : window.getAllViews())
+        сView.addEventLink(RepaintEvent.class, listener, "viewRepainted");
     }
     animateStartSceneTime = window.getScene().getTime();
     animateStartClockTime = System.currentTimeMillis();
@@ -997,7 +997,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     window.updateMenus();
   }
 
-  public Constructor getTrackConstructor(Class<? extends Track> clazz, int argsCount)
+  public static Constructor<Track> getTrackConstructor(Class<? extends Track> clazz, int argsCount)
   {
     Constructor[] con = clazz.getConstructors();
     return Arrays.stream(con).filter(c -> c.getParameterTypes().length == argsCount).findFirst().orElse(con[0]);
@@ -1005,7 +1005,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
    
   public static List<ObjectInfo> filterTargets(Object[] obj)
   {
-    return Arrays.stream(obj).filter(o -> o instanceof ObjectInfo).map(ObjectInfo.class::cast).collect(Collectors.toList());
+    return Arrays.stream(obj).filter(ObjectInfo.class::isInstance).map(ObjectInfo.class::cast).collect(Collectors.toList());
   }
    
   /** Add a track to the specified objects. */
@@ -1013,59 +1013,55 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     Scene theScene = window.getScene();
     UndoRecord undo = new UndoRecord(window, false);
-    Vector<Track> added = new Vector<>();
+
     Object[] args;
     if (extraArgs == null)
-      args = new Object [1];
+      args = new Object[1];
     else
       {
         args = new Object[extraArgs.length + 1];
         for (int i = 0; i < extraArgs.length; i++)
           args[i + 1] = extraArgs[i];
       }
-    Constructor[] con = trackClass.getConstructors();
-    int which;
-    for (which = 0; which < con.length && con[which].getParameterTypes().length != args.length; which++);
-    Constructor match = con[which];
-     
+
+    Constructor<? extends Track> match = Score.getTrackConstructor(trackClass, args.length);
+    List<Track> added = new Vector<>();
     try
+    {
+      for(ObjectInfo info: Score.filterTargets(obj))
       {
-        for (int i = 0; i < obj.length; i++)
-          if (obj[i] instanceof ObjectInfo)
-            {
-              ObjectInfo info = (ObjectInfo) obj[i];
-              if (trackClass == PoseTrack.class)
-                {
-                  Object3D posable = info.getObject().getPosableObject();
-                  if (posable == null)
-                    continue;
-                  if (posable != info.getObject())
-                    {
-                      String[] options = new String [] {Translate.text("Yes"), Translate.text("No")};
-                      BStandardDialog dlg = new BStandardDialog("", UIUtilities.breakString(Translate.text("mustConvertToActor", info.getName())), BStandardDialog.QUESTION);
-                      int choice = dlg.showOptionDialog(window, options, options[0]);
-                      if (choice == 1)
-                        continue;
-                      theScene.replaceObject(info.getObject(), posable, undo);
-                    }
-                }
-              undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
-              args[0] = info;
-              Track newtrack = (Track) match.newInstance(args);
-              info.addTrack(newtrack, 0);
-              added.add(newtrack);
-            }
+        if (trackClass == PoseTrack.class)
+        {
+          Object3D posable = info.getObject().getPosableObject();
+          if (posable == null)
+            continue;
+          if (posable != info.getObject())
+          {
+            String[] options = new String [] {Translate.text("Yes"), Translate.text("No")};
+            BStandardDialog dlg = new BStandardDialog("", UIUtilities.breakString(Translate.text("mustConvertToActor", info.getName())), BStandardDialog.QUESTION);
+            int choice = dlg.showOptionDialog(window, options, options[0]);
+            if (choice == 1)
+              continue;
+            theScene.replaceObject(info.getObject(), posable, undo);
+          }
+        }
+        undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
+        args[0] = info;
+        Track newtrack = match.newInstance(args);
+        info.addTrack(newtrack, 0);
+        added.add(newtrack);
       }
+    }
     catch (Exception ex)
-      {
-        ex.printStackTrace();
-      }
+    {
+      ex.printStackTrace();
+    }
+
     window.setUndoRecord(undo);
     if (deselectOthers)
       theList.deselectAll();
     rebuildList();
-    for (int i = 0; i < added.size(); i++)
-      theList.setSelected(added.get(i), true);
+    added.forEach(tr -> theList.setSelected(tr, true));
     selectedTracksChanged();
     window.updateMenus();
   }
