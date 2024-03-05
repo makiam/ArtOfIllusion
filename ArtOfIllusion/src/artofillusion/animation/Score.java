@@ -21,11 +21,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.*;
 import java.text.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 /** This is a Widget which displays all the tracks for objects in a scene, and shows
@@ -221,7 +218,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   /** Get the currently selected keyframes. */
 
-  public SelectionInfo [] getSelectedKeyframes()
+  public SelectionInfo[] getSelectedKeyframes()
   {
     return selection;
   }
@@ -236,30 +233,24 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   }
 
   /** Add a set of keyframes to the selection. */
-
-  public void addSelectedKeyframes(SelectionInfo[] newsel)
+  public void addSelectedKeyframes(SelectionInfo[] newSelection)
   {
-    List<SelectionInfo> v = new Vector<>();
-    int i;
-    int j;
+    List<SelectionInfo> currentSelection = new Vector<>();
+    Collections.addAll(currentSelection, selection);
 
-    for (i = 0; i < selection.length; i++)
-      v.add(selection[i]);
-    for (i = 0; i < newsel.length; i++)
-      {
+    for (SelectionInfo item: newSelection) {
+        int j;
         for (j = 0; j < selection.length; j++)
-          if (newsel[i].key == selection[j].key)
-            {
-              for (int k = 0; k < newsel[i].selected.length; k++)
-                selection[j].selected[k] |= newsel[i].selected[k];
-              break;
+            if (item.key == selection[j].key) {
+                for (int k = 0; k < item.selected.length; k++)
+                    selection[j].selected[k] |= item.selected[k];
+                break;
             }
         if (j == selection.length)
-          v.add(newsel[i]);
-      }
-    selection = new SelectionInfo [v.size()];
-    for (i = 0; i < selection.length; i++)
-      selection[i] = v.get(i);
+            currentSelection.add(item);
+    }
+
+    selection = currentSelection.toArray(new SelectionInfo[0]);
     window.updateMenus();
   }
 
@@ -291,11 +282,11 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   /** Determine whether the handle for a particular value of a keyframe is selected. */
 
-  public boolean isKeyframeSelected(Keyframe k, int value)
+  public boolean isKeyframeSelected(Keyframe probe, int value)
   {
-    for (int i = 0; i < selection.length; i++)
-      if (selection[i].key == k)
-        return (selection[i].selected.length > value && selection[i].selected[value]);
+    for (SelectionInfo selectionInfo : selection)
+        if (selectionInfo.key == probe)
+            return (selectionInfo.selected.length > value && selectionInfo.selected[value]);
     return false;
   }
 
