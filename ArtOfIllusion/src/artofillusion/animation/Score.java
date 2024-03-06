@@ -258,15 +258,13 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   public void removeSelectedKeyframe(Keyframe key)
   {
-    List<SelectionInfo> v = new Vector<>();
+    List<SelectionInfo> filtered = new Vector<>();
 
     for (SelectionInfo selectionInfo : selection) {
         if (selectionInfo.key == key) continue;
-        v.add(selectionInfo);
+        filtered.add(selectionInfo);
     }
-    selection = new SelectionInfo [v.size()];
-    for (int i = 0; i < selection.length; i++)
-      selection[i] = v.get(i);
+    selection = filtered.toArray(new SelectionInfo[0]);
     window.updateMenus();
   }
 
@@ -420,8 +418,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   public void setStartTime(double time)
   {
     theAxis.setStartTime(time);
-    for (int i = 0; i < graphs.size(); i++)
-      graphs.get(i).setStartTime(time);
+    graphs.forEach(graph -> graph.setStartTime(time));
     startTime = time;
     repaintGraphs();
   }
@@ -468,7 +465,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
   {
     if (hasRepaintedView == null)
     {
-      // The first time this is called, add a listener to all the views in the window so we can tell when they've all
+      // The first time this is called, add a listener to all the views in the window, so we can tell when they've all
       // been repainted.
 
       hasRepaintedView = new boolean[window.getAllViews().length];
@@ -494,8 +491,8 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
           }
         }
       };
-      for (ViewerCanvas сView : window.getAllViews())
-        сView.addEventLink(RepaintEvent.class, listener, "viewRepainted");
+      for (ViewerCanvas cView : window.getAllViews())
+        cView.addEventLink(RepaintEvent.class, listener, "viewRepainted");
     }
     animateStartSceneTime = window.getScene().getTime();
     animateStartClockTime = System.currentTimeMillis();
