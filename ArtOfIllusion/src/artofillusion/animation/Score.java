@@ -939,30 +939,25 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
   /** Delete the selected tracks. */
 
-  public void deleteSelectedTracks()
-  {
-    Object[] sel = theList.getSelectedObjects();
-    UndoRecord undo = new UndoRecord(window, false);
-    Vector<ObjectInfo> modifiedObj = new Vector<>();
+ public void deleteSelectedTracks() {
 
-    for (int i = 0; i < sel.length; i++)
-      if (sel[i] instanceof Track)
-        {
-          Track tr = (Track) sel[i];
-          if (!(tr.getParent() instanceof ObjectInfo))
-            continue;
-          ObjectInfo info = (ObjectInfo) tr.getParent();
-          if (modifiedObj.indexOf(info) < 0)
-            {
-              undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
-              modifiedObj.add(info);
-            }
-          info.removeTrack(tr);
-        }
-    window.setUndoRecord(undo);
-    rebuildList();
-    repaintGraphs();
-  }
+     UndoRecord undo = new UndoRecord(window);
+     List<ObjectInfo> modifiedObj = new Vector<>();
+
+     for (Track tr: Score.filterTracks(theList.getSelectedObjects())) {
+         if (tr.getParent() instanceof ObjectInfo) {
+             ObjectInfo info = (ObjectInfo) tr.getParent();
+             if (modifiedObj.indexOf(info) < 0) {
+                 undo.addCommand(UndoRecord.SET_TRACK_LIST, info, info.getTracks());
+                 modifiedObj.add(info);
+             }
+             info.removeTrack(tr);
+         }
+     }
+     window.setUndoRecord(undo);
+     rebuildList();
+     repaintGraphs();
+ }
 
   /** Select all tracks of selected objects. */
 
