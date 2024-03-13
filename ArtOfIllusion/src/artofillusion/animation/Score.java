@@ -991,10 +991,17 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
     return Arrays.stream(con).filter(c -> c.getParameterTypes().length == argsCount).findFirst().orElse(con[0]);
   }
    
-  public static List<ObjectInfo> filterTargets(Object[] obj)
-  {
-    return Arrays.stream(obj).filter(ObjectInfo.class::isInstance).map(ObjectInfo.class::cast).collect(Collectors.toList());
-  }
+ public static List<ObjectInfo> filterTargets(Object[] obj) {
+     return filterList(obj, ObjectInfo.class);
+ }
+
+ public static List<Track> filterTracks(Object[] obj) {
+     return filterList(obj, Track.class);
+ }
+
+ public static <T> List<T> filterList(Object[] obj, Class<T> clazz) {
+     return Arrays.stream(obj).filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toList());
+ }
    
   /** Add a track to the specified objects. */
   public void addTrack(Object[] obj, Class<? extends Track> trackClass, Object[] extraArgs, boolean deselectOthers)
