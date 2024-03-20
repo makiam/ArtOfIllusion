@@ -941,7 +941,7 @@ public class Score extends BorderContainer implements EditingWindow, PopupMenuMa
 
  public void deleteSelectedTracks() {
 
-     UndoRecord undo = new UndoRecord(window);
+     UndoRecord undo = new UndoRecord(window, false);
      List<ObjectInfo> modifiedObj = new Vector<>();
 
      for (Track tr: Score.filterTracks(theList.getSelectedObjects())) {
