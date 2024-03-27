@@ -29,8 +29,8 @@ import org.w3c.dom.*;
 public class PluginRegistry
 {
   private static final ArrayList<ClassLoader> pluginLoaders = new ArrayList<>();
-  private static final HashSet<Class> categories = new HashSet<Class>();
-  private static final HashMap<Class, List<Object>> categoryClasses = new HashMap<>();
+  private static final HashSet<Class<?>> categories = new HashSet<>();
+  private static final HashMap<Class<?>, List<Object>> categoryClasses = new HashMap<>();
   private static final HashMap<String, Map<String, PluginResource>> resources = new HashMap<>();
   private static final HashMap<String, ExportInfo> exports = new HashMap<>();
   private static final HashMap<String, Object> classMap = new HashMap<>();
@@ -113,7 +113,7 @@ public class PluginRegistry
     while (jars.size() > 0)
     {
       boolean processedAny = false;
-      for (JarInfo jar : new ArrayList<JarInfo>(jars))
+      for (JarInfo jar : new ArrayList<>(jars))
       {
         // See if we've already processed all other jars it depends on.
 
@@ -174,7 +174,7 @@ public class PluginRegistry
         for (String importName : jar.imports)
           loader.add(nameMap.get(importName).loader);
 
-        // NTJ - add URL of searchpath to class loader
+        // NTJ - add URL of searchPath to class loader
         for (String uri : jar.searchPath) {
 
           URL url = new URL(uri);
@@ -243,7 +243,7 @@ public class PluginRegistry
    * Get all categories of plugins that have been defined.
    */
 
-  public static List<Class> getCategories()
+  public static List<Class<?>> getCategories()
   {
     return new ArrayList<>(categories);
   }
@@ -264,7 +264,7 @@ public class PluginRegistry
         List<Object> instances = categoryClasses.get(category);
         if (instances == null)
         {
-          instances = new ArrayList<Object>();
+          instances = new ArrayList<>();
           categoryClasses.put(category, instances);
         }
         instances.add(plugin);
@@ -293,13 +293,13 @@ public class PluginRegistry
    * If multiple plugins of the same class have been registered, this returns the most recently
    * registered one.
    *
-   * @param classname    the fully qualified name of the class of the plugin object to return
+   * @param className    the fully qualified name of the class of the plugin object to return
    * @return the plugin object of the specified class, or null if no matching plugin has been registered
    */
 
-  public static Object getPluginObject(String classname)
+  public static Object getPluginObject(String className)
   {
-    return classMap.get(classname);
+    return classMap.get(className);
   }
 
   /**
@@ -321,7 +321,7 @@ public class PluginRegistry
     Map<String, PluginResource> resourcesForType = resources.get(type);
     if (resourcesForType == null)
     {
-      resourcesForType = new HashMap<String, PluginResource>();
+      resourcesForType = new HashMap<>();
       resources.put(type, resourcesForType);
     }
     PluginResource resource = resourcesForType.get(id);
@@ -711,7 +711,9 @@ public class PluginRegistry
 
   private static class ExportInfo
   {
-    String method, id, className;
+    String method;
+    String id;
+    String className;
     Object plugin;
   }
 
