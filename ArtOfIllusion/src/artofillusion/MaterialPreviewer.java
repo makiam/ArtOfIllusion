@@ -222,7 +222,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
       }
   }
 
-  private void drawHilight(Graphics g)
+  private void drawHighlight(Graphics g)
   {
     Rectangle bounds = getBounds();
     g.setColor(Color.red);
