@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2009 by Peter Eastman
+   Changes copyright (C) 2024 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -22,14 +23,14 @@ import buoy.widget.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/** MaterialPreviewer is a component used for renderering previews of Materials.  It displays
+/** MaterialPreviewer is a component used for rendering previews of Materials.  It displays
     a scene consisting of a Sphere with the desired Material applied to it, a ground plane,
     and a single light.  Optionally, an Object3D may be specified which will then be used
     instead of a Sphere. */
 
 public class MaterialPreviewer extends CustomWidget implements RenderListener
 {
-  Scene theScene;
+  private Scene theScene;
   Camera theCamera;
   ObjectInfo info;
   CoordinateSystem objectCoords;
@@ -37,7 +38,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
   boolean mouseInside, renderInProgress;
   Point clickPoint;
   private Mat4 dragTransform;
-  private Object3D shape[];
+  private Object3D[] shape;
 
   public static final int HANDLE_SIZE = 5;
   static final double DRAG_SCALE = Math.PI/360.0;
@@ -155,7 +156,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     return info;
   }
 
-  /** Get the scene being rendererd as the preview. */
+  /** Get the scene being rendered as the preview. */
 
   public Scene getScene()
   {
