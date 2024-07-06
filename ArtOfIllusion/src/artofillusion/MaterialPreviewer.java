@@ -98,9 +98,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     CoordinateSystem coords = new CoordinateSystem(new Vec3(0.0, 0.0, 10.0*max), new Vec3(0.0, 0.0, -1.0), Vec3.vy());
     if (max > 10.0)
       max = 10.0;
-    Vec3 vert[] = new Vec3 [] {new Vec3(100.0*max, floor, 100.0*max), new Vec3(-100.0*max, floor, 100.0*max), new Vec3(0.0, floor, -100.0*max)};
-    int face[][] = {{0, 1, 2}};
-    TriangleMesh tri;
+    Vec3[] vert = new Vec3[]{new Vec3(100.0 * max, floor, 100.0 * max), new Vec3(-100.0 * max, floor, 100.0 * max), new Vec3(0.0, floor, -100.0 * max)};
 
     theScene = new Scene();
     theCamera = new Camera();
@@ -108,7 +106,8 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     coords = new CoordinateSystem(new Vec3(), new Vec3(-0.5, -0.4, -1.0), Vec3.vy());
     theScene.addObject(new DirectionalLight(new RGBColor(1.0f, 1.0f, 1.0f), 0.8f), coords, "", null);
     coords = new CoordinateSystem(new Vec3(), Vec3.vz(), Vec3.vy());
-    theScene.addObject(tri = new TriangleMesh(vert, face), coords, "", null);
+    TriangleMesh tri;
+    theScene.addObject(tri = new TriangleMesh(vert, new int[][]{{0, 1, 2}}), coords, "", null);
     Texture tex = theScene.getDefaultTexture();
     tri.setTexture(tex, tex.getDefaultMapping(tri));
     info = obj;
@@ -228,9 +227,9 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     Rectangle bounds = getBounds();
     g.setColor(Color.red);
     g.fillRect(0, 0, HANDLE_SIZE, HANDLE_SIZE);
-    g.fillRect(bounds.width-HANDLE_SIZE, 0, HANDLE_SIZE, HANDLE_SIZE);
-    g.fillRect(0, bounds.height-HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-    g.fillRect(bounds.width-HANDLE_SIZE, bounds.height-HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+    g.fillRect(bounds.width - HANDLE_SIZE, 0, HANDLE_SIZE, HANDLE_SIZE);
+    g.fillRect(0, bounds.height - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+    g.fillRect(bounds.width - HANDLE_SIZE, bounds.height - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
   }
 
   private void drawObject(Graphics g)
@@ -244,13 +243,13 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     theCamera.setObjectTransform(m);
     WireframeMesh mesh = info.getObject().getWireframeMesh();
     int from[] = mesh.from, to[] = mesh.to, last = -1;
-    Vec3 vert[] = mesh.vert;
+    Vec3[] vert = mesh.vert;
     for (int i = 0; i < mesh.from.length; i++)
     {
       if (from[i] == last)
-        theCamera.drawClippedLineTo(g, vert[(last=to[i])]);
+        theCamera.drawClippedLineTo(g, vert[(last = to[i])]);
       else
-        theCamera.drawClippedLine(g, vert[from[i]], vert[(last=to[i])]);
+        theCamera.drawClippedLine(g, vert[from[i]], vert[(last = to[i])]);
     }
   }
 
