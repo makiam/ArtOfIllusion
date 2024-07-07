@@ -35,7 +35,8 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
   ObjectInfo info;
   CoordinateSystem objectCoords;
   Image theImage;
-  boolean mouseInside, renderInProgress;
+  boolean mouseInside;
+  boolean renderInProgress;
   Point clickPoint;
   private Mat4 dragTransform;
   private Object3D[] shape;
@@ -213,7 +214,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     if (theImage != null)
       g.drawImage(theImage, 0, 0, getComponent());
     if (mouseInside)
-      drawHilight(g);
+      drawHighlight(g);
     if (renderInProgress)
       {
         Rectangle bounds = getBounds();
@@ -242,7 +243,9 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     m = Mat4.translation(origin.x, origin.y, origin.z).times(m);
     theCamera.setObjectTransform(m);
     WireframeMesh mesh = info.getObject().getWireframeMesh();
-    int from[] = mesh.from, to[] = mesh.to, last = -1;
+    int[] from = mesh.from;
+    int[] to = mesh.to;
+    int last = -1;
     Vec3[] vert = mesh.vert;
     for (int i = 0; i < mesh.from.length; i++)
     {
@@ -257,7 +260,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
 
   private void changeView(int view)
   {
-    double angles[][] = new double [][] {
+    double[][] angles = new double [][] {
         {0.0, 0.0, 0.0},
         {0.0, 180.0, 0.0},
         {0.0, -90.0, 0.0},
@@ -304,7 +307,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
   {
     mouseInside = true;
     Graphics g = getComponent().getGraphics();
-    drawHilight(g);
+    drawHighlight(g);
     g.dispose();
   }
 
@@ -375,14 +378,14 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     }
     else
     {
-      Vec3 rotAxis = new Vec3((clickPoint.y-dragPoint.y)*DRAG_SCALE, (dragPoint.x-clickPoint.x)*DRAG_SCALE, 0.0);
+      Vec3 rotAxis = new Vec3((clickPoint.y - dragPoint.y) * DRAG_SCALE, (dragPoint.x - clickPoint.x) * DRAG_SCALE, 0.0);
       double angle = rotAxis.length();
       rotAxis = rotAxis.times(1.0/angle);
       rotAxis = theCamera.getViewToWorld().timesDirection(rotAxis);
       dragTransform = Mat4.axisRotation(rotAxis, angle);
     }
     g.drawImage(theImage, 0, 0, getComponent());
-    drawHilight(g);
+    drawHighlight(g);
     drawObject(g);
     g.dispose();
   }
