@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@SwingContainer(false)
 public class PreviewComponent extends JComponent implements MouseListener, HierarchyListener, RenderListener {
 
     private boolean mouseInside;
@@ -45,7 +46,6 @@ public class PreviewComponent extends JComponent implements MouseListener, Hiera
 
     @Override
     public void mousePressed(MouseEvent event) {
-        // WIP
         clickPoint = event.getPoint();
     }
 
