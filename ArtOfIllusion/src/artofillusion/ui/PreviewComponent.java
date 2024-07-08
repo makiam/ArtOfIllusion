@@ -1,33 +1,41 @@
 package artofillusion.ui;
 
 import artofillusion.RenderListener;
+import artofillusion.Scene;
 import artofillusion.image.ComplexImage;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.Point;
+import java.awt.*;
+import java.awt.event.*;
 
-public class PreviewComponent extends JComponent implements MouseListener, RenderListener {
+public class PreviewComponent extends JComponent implements MouseListener, HierarchyListener, RenderListener {
 
     private boolean mouseInside;
     private Point clickPoint;
+    private boolean renderInProgress;
+    private Image image;
+    private Scene scene;
 
     PreviewComponent() {
         this.addMouseListener(this);
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                PreviewComponent.this.repaint(0,0,0, PreviewComponent.this.getWidth(), PreviewComponent.this.getHeight());
+                repaint();
             }
         });
+        this.addHierarchyListener(this);
+    }
+
+    public Scene getScene() {
+        return this.scene;
     }
 
     @Override
     public void imageComplete(ComplexImage image) {
-        // WIP
+        this.image = image.getImage();
+        renderInProgress = false;
+        repaint();
     }
 
     @Override
@@ -38,7 +46,7 @@ public class PreviewComponent extends JComponent implements MouseListener, Rende
     @Override
     public void mousePressed(MouseEvent event) {
         // WIP
-        clickPoint =event.getPoint();
+        clickPoint = event.getPoint();
     }
 
     @Override
@@ -54,5 +62,10 @@ public class PreviewComponent extends JComponent implements MouseListener, Rende
     @Override
     public void mouseExited(MouseEvent e) {
         mouseInside = false;
+    }
+
+    @Override
+    public void hierarchyChanged(HierarchyEvent event) {
+
     }
 }

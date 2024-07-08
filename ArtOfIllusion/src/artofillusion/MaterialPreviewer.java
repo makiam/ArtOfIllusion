@@ -137,7 +137,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
       @Override
       public void hierarchyChanged(HierarchyEvent ev)
       {
-        System.out.println("Hierarchy changed....");
+
         if ((ev.getChangeFlags()&HierarchyEvent.DISPLAYABILITY_CHANGED) != 0)
           if (!getComponent().isDisplayable())
           {
@@ -424,11 +424,11 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
       dlg = new ComponentsDialog(UIUtilities.findWindow(this), Translate.text("configurePreview"),
           new Widget [] {shapeChoice, viewChoice}, new String [] {Translate.text("Shape"), Translate.text("resetViewTo")});
     }
-    if (!dlg.clickedOk())
-      return;
-    if (shape != null && shape[shapeChoice.getSelectedIndex()] != info.getObject())
-      changeObject(shapeChoice.getSelectedIndex());
-    if (viewChoice.getSelectedIndex() > 0)
-      changeView(viewChoice.getSelectedIndex()-1);
+    if (dlg.clickedOk()) {
+        if (shape != null && shape[shapeChoice.getSelectedIndex()] != info.getObject())
+            changeObject(shapeChoice.getSelectedIndex());
+        if (viewChoice.getSelectedIndex() > 0)
+            changeView(viewChoice.getSelectedIndex() - 1);
+    }
   }
 }
