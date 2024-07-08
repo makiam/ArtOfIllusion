@@ -8,10 +8,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.Point;
 
 public class PreviewComponent extends JComponent implements MouseListener, RenderListener {
 
-    boolean mouseInside;
+    private boolean mouseInside;
+    private Point clickPoint;
 
     PreviewComponent() {
         this.addMouseListener(this);
@@ -34,8 +36,9 @@ public class PreviewComponent extends JComponent implements MouseListener, Rende
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent event) {
         // WIP
+        clickPoint =event.getPoint();
     }
 
     @Override

@@ -137,6 +137,7 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
       @Override
       public void hierarchyChanged(HierarchyEvent ev)
       {
+        System.out.println("Hierarchy changed....");
         if ((ev.getChangeFlags()&HierarchyEvent.DISPLAYABILITY_CHANGED) != 0)
           if (!getComponent().isDisplayable())
           {
@@ -372,9 +373,9 @@ public class MaterialPreviewer extends CustomWidget implements RenderListener
     if (mouseButtonThree(e))
     {
        if (e.isControlDown())
-        dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y-clickPoint.y)*0.01);
+         dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y - clickPoint.y) * 0.01);
       else
-        dragTransform = Mat4.translation((dragPoint.x-clickPoint.x)*0.01, (clickPoint.y-dragPoint.y)*0.01, 0.0);
+         dragTransform = Mat4.translation((dragPoint.x - clickPoint.x) * 0.01, (clickPoint.y - dragPoint.y) * 0.01, 0.0);
     }
     else
     {
