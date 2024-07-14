@@ -7,7 +7,9 @@ import artofillusion.image.ComplexImage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.JavaBean;
 
+@JavaBean
 @SwingContainer(false)
 public class PreviewComponent extends JComponent implements MouseListener, HierarchyListener, RenderListener {
 
@@ -15,8 +17,8 @@ public class PreviewComponent extends JComponent implements MouseListener, Hiera
     private Point clickPoint;
     private boolean renderInProgress;
     private Image image;
-    private Scene scene;
-
+    private final Scene scene = new Scene();
+    private JLabel xx;
     PreviewComponent() {
         this.addMouseListener(this);
         this.addComponentListener(new ComponentAdapter() {
