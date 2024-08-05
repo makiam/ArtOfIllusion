@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2008 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2024 by Maksim Khramov
 
    This program is free software; you can redistribute it and/or modify it under the
    terms of the GNU General Public License as published by the Free Software
@@ -25,8 +25,8 @@ import java.io.*;
 
 public class Curve extends Object3D implements Mesh
 {
-  protected MeshVertex vertex[];
-  protected float smoothness[];
+  protected MeshVertex[] vertex;
+  protected float[] smoothness;
   protected boolean closed;
   protected int smoothingMethod;
   protected WireframeMesh cachedWire;
@@ -39,7 +39,7 @@ public class Curve extends Object3D implements Mesh
     new Property(Translate.text("menu.closedEnds"), true)
   };
 
-  public Curve(Vec3 v[], float smoothness[], int smoothingMethod, boolean isClosed)
+  public Curve(Vec3[] v, float[] smoothness, int smoothingMethod, boolean isClosed)
   {
     int i;
 
@@ -605,20 +605,6 @@ public class Curve extends Object3D implements Mesh
     return true;
   }
 
-  /** Get the skeleton.  This returns null, since Curves cannot have skeletons. */
-
-  @Override
-  public Skeleton getSkeleton()
-  {
-    return null;
-  }
-
-  /** Set the skeleton.  This does nothing, since Curves cannot have skeletons. */
-
-  @Override
-  public void setSkeleton(Skeleton s)
-  {
-  }
 
   @Override
   public void edit(EditingWindow parent, ObjectInfo info, Runnable cb)
@@ -976,7 +962,7 @@ public class Curve extends Object3D implements Mesh
 
     /** Reconstructs the keyframe from its serialized representation. */
 
-    public CurveKeyframe(DataInputStream in, Object parent) throws IOException, InvalidObjectException
+    public CurveKeyframe(DataInputStream in, Object parent) throws IOException
     {
       this();
       short version = in.readShort();

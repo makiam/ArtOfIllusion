@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2015 by Peter Eastman
-   Changes copyright (C) 2017 by Maksim Khramov
+   Changes copyright (C) 2017-2024 by Maksim Khramov
    A modification copyright (C) 2017 Petri Ihalainen
    
    This program is free software; you can redistribute it and/or modify it under the
@@ -24,7 +24,6 @@ import java.io.*;
 import java.lang.ref.*;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 /** The TriangleMesh class represents an arbitrary surface defined by a mesh of triangular
@@ -258,7 +257,6 @@ public class TriangleMesh extends Object3D implements FacetedMesh
 
   /** Create a new TriangleMesh using the provided vertex locations and
    * face topology.
-   *
    * Creates Vertex objects from the provided positions. The topology
    * provided must be a valid manifold surface.
    *
@@ -275,7 +273,6 @@ public class TriangleMesh extends Object3D implements FacetedMesh
   }
 
   /** Create a new TriangleMesh using the provided vertices and face topology.
-   *
    * The vertices for each face must be listed in counter-clockwise
    * order when viewed from the outside of the mesh. All faces must have
    * a consistent vertex order, such that the object has a well-defined
@@ -3082,7 +3079,7 @@ groups:     do
         double dot2 = -edge1.dot(edge3);
         double dot3 = edge2.dot(edge3);
         if (dot1 < -1.0)
-          dot1 = -1.0; // This can occassionally happen due to roundoff error
+          dot1 = -1.0; // This can occasionally happen due to roundoff error
         if (dot1 > 1.0)
           dot1 = 1.0;
         if (dot2 < -1.0)
