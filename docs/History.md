@@ -1,5 +1,15 @@
 Art of Illusion Version History
 
+Current main branch, not officially released
+
+- Fix bug where having an editer view set to "Rendered" mode would override some of the renderer settings when creating a finished image
+- Fix bug that caused a raytraced Parallel render to zoom in and out when focal distance/depth of field is animated
+- Fix issues with Anti-Aliased raytraced images that affected effective field-of-view and view direction
+- Fix multiple issues with camera filters, including:
+    * Blur filter properly saves and reloads
+    * Camera Filters can now be edited and added without losing existing keyframes
+    * Filter edits are now properly supported by the undo system
+
 v3.2.1, November 14, 2023
 
 - Updated Groovy library - better java version compatibility and overall
